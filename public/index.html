@@ -30,7 +30,7 @@
             background-color: var(--primary-color);
             
         }
-        #user-message{
+        #ai-preprompt, #user-message{
             width: 100%;
             border-top: 1px solid var(--button-color);
             border-bottom: 1px solid var(--button-color);
@@ -74,14 +74,19 @@
     </style>
 </head>
 <body>
-<div id="chat-container">
-    <div id="user-input">
-        <textarea id="message" oninput="autoExpand(this)" placeholder="Enter your message"></textarea>
-        <button id="send">Send</button>
-        <br>
-        <div id="user-message"></div>
+    <div id="chat-container">
+        <div id="user-input">
+            <textarea id="image" oninput="autoExpand(this)" placeholder="Tell bambi AI how to behave & what she needs to do!"></textarea>
+            <button id="set">Set image</button>
+            <br>
+            <div id="ai-image"></div>
+            <br>
+            <textarea id="message" oninput="autoExpand(this)" placeholder="Enter your message"></textarea>
+            <button id="send">Send</button>
+            <br>
+            <div id="user-message"></div>
+        </div>
+        <div id="ai-reply"></div>        
     </div>
-    <div id="ai-reply"></div>        
-</div>
 </body>
 </html>
