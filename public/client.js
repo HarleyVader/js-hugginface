@@ -1,53 +1,48 @@
+// client.js
 var socket = io();
+console.log('Socket initialized:', socket); // Log the initialized socket
 
 function autoExpand(element) {
+  console.log('Expanding element:', element); // Log the element being expanded
   element.style.height = 'inherit';
   const computed = window.getComputedStyle(element);
+  console.log('Computed styles:', computed); // Log the computed styles
   const height = parseInt(computed.getPropertyValue('border-top-width'), 10)
                + parseInt(computed.getPropertyValue('border-bottom-width'), 10)
                + element.scrollHeight;
+  console.log('Calculated height:', height); // Log the calculated height
                
   element.style.height = height + 'px';
-}
-
-// Function to send a message to the server
-function sendMessage() {
-  var message = document.getElementById('message').value;
-
-  if (message.trim() !== '') {
-    // Emit the message to the server
-    socket.emit('message', { prompt: message });
-
-    // Update the user-message div
-    document.getElementById('user-message').innerText = message;
-  }
-
-  // Clear input fields after sending
-  document.getElementById('message').value = '';
+  console.log('Element height set to:', element.style.height); // Log the set height
 }
 
 socket.on('result', function(result) {
-  console.log('Received result:', result); // Log the received result
+    console.log('Received result:', result); // Log the received result
 
-  var node = document.createElement('img');
-  
-  var url = URL.createObjectURL(result);
-  console.log('Converted result:', url); // Log converted result
-  node.src = url;
+    var node = document.createElement('img');
+    console.log('Created img node:', node); // Log the created img node
 
-  document.getElementById('ai-reply').appendChild(node);
-  lastReply = result;
+    // Convert the result to a Blob if it's a base64-encoded string
+    if (typeof result === 'string' && result.startsWith('data:image')) {
+        console.log('Result is a base64-encoded string'); // Log that the result is a base64-encoded string
+        fetch(result)
+            .then(res => {
+                console.log('Fetched result:', res); // Log the fetched result
+                return res.blob();
+            })
+            .then(blob => {
+                console.log('Converted result to blob:', blob); // Log the converted blob
+                var url = URL.createObjectURL(blob);
+                console.log('Converted result:', url); // Log converted result
+                node.src = url;
+                console.log('Set node src to:', node.src); // Log the set node src
+            });
+    }
+});
+// client.js
+socket.on('connect', function() {
+  console.log('Connected to server'); // Log when connected to server
 });
 
-// Attach the sendMessage function to the send button
-document.getElementById('send').onclick = sendMessage;
-
-// Attach sendMessage function to the enter key
-document.getElementById('message').addEventListener('keypress', function (e) {
-  if (e.key === 'Enter') {
-    sendMessage();
-  }
-});
-
-// Optional: Store the last reply for continuity
-let lastReply = '';
+socket.emit('user interaction', data); // Emit 'user interaction' event
+console.log('Emitted user interaction:', data); // Log the emitted data
