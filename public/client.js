@@ -13,7 +13,6 @@ function autoExpand(element) {
 // Function to send a message to the server
 function sendMessage() {
   var message = document.getElementById('message').value;
-  var preprompt = document.getElementById('preprompt').value;
 
   if (message.trim() !== '') {
     // Emit the message to the server
@@ -25,37 +24,23 @@ function sendMessage() {
 
   // Clear input fields after sending
   document.getElementById('message').value = '';
-  document.getElementById('preprompt').value = '';
 }
 
-// Function to show preprompt to the user
-function showPreprompt() {
-  // Attach showPreprompt function to the showPreprompt button
-  document.getElementById('ai-preprompt').onclick = showPreprompt;
-}
-
-// Listen for result events from the server
 socket.on('result', function(result) {
-  var node = document.createElement('p');
-  var textnode = document.createTextNode(result);
-  node.appendChild(textnode);
+  console.log('Received result:', result); // Log the received result
+
+  var node = document.createElement('img');
+  
+  var url = URL.createObjectURL(result);
+  console.log('Converted result:', url); // Log converted result
+  node.src = url;
+
   document.getElementById('ai-reply').appendChild(node);
-  lastReply = result; // Store the last reply
-});
-
-document.getElementById('set').addEventListener('click', function() {
-  const preprompt = document.getElementById('preprompt').value;
-  socket.emit('set preprompt', { preprompt });
-
-  // Update the ai-preprompt div
-  document.getElementById('ai-preprompt').innerText = preprompt;
+  lastReply = result;
 });
 
 // Attach the sendMessage function to the send button
 document.getElementById('send').onclick = sendMessage;
-
-// Attach showPreprompt function to the showPreprompt button
-document.getElementById('ai-preprompt').onclick = showPreprompt;
 
 // Attach sendMessage function to the enter key
 document.getElementById('message').addEventListener('keypress', function (e) {

@@ -30,7 +30,7 @@
             background-color: var(--primary-color);
             
         }
-        #ai-preprompt, #user-message{
+        #user-message{
             width: 100%;
             border-top: 1px solid var(--button-color);
             border-bottom: 1px solid var(--button-color);
@@ -72,21 +72,38 @@
             background-color: #ff00ff;
         }
     </style>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io(); // Define the socket variable
+
+    // Now you can use the socket variable
+    socket.on('result', function(result) {
+        console.log('Received result:', result); // Log the received result
+
+        var node = document.createElement('img');
+
+        // Convert the result to a Blob if it's a base64-encoded string
+        if (typeof result === 'string' && result.startsWith('data:image')) {
+            fetch(result)
+                .then(res => res.blob())
+                .then(blob => {
+                    var url = URL.createObjectURL(blob);
+                    console.log('Converted result:', url); // Log converted result
+                    node.src = url;
+                });
+        }
+    });
+</script>
 </head>
 <body>
-    <div id="chat-container">
-        <div id="user-input">
-            <textarea id="preprompt" oninput="autoExpand(this)" placeholder="Tell bambi AI how to behave & what she needs to do!"></textarea>
-            <button id="set">Set</button>
-            <br>
-            <div id="ai-preprompt"></div>
-            <br>
-            <textarea id="message" oninput="autoExpand(this)" placeholder="Enter your message"></textarea>
-            <button id="send">Send</button>
-            <br>
-            <div id="user-message"></div>
-        </div>
-        <div id="ai-reply"></div>        
+<div id="chat-container">
+    <div id="user-input">
+        <textarea id="message" oninput="autoExpand(this)" placeholder="Enter your message"></textarea>
+        <button id="send">Send</button>
+        <br>
+        <div id="user-message"></div>
     </div>
+    <div id="ai-reply"></div>        
+</div>
 </body>
 </html>
