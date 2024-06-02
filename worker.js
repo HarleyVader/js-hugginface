@@ -26,14 +26,24 @@ async function query(message) {
     console.log('Querying with message:', message);
     console.log('Starting fetch');
     const response = await fetch(
-        "https://api-inference.huggingface.co/models/UnfilteredAI/NSFW-gen-v2.1",
+        "https://c5jmh0pkq7fg8o12.us-east-1.aws.endpoints.huggingface.cloud",
         {
-            headers: { Authorization: `Bearer ${process.env.TOKEN}` },
+            headers: { 
+                "Accept" : "image/png",
+                "Content-Type": "application/json" 
+            },
             method: "POST",
-            body: message,
+            body: JSON.stringify({ inputs: message }), // Convert message to a JSON object
         }
     );
     console.log('Fetch finished');
+
+    if (!response.ok) {
+        console.log('Response status:', response.status);
+        console.log('Response status text:', response.statusText);
+        const errorText = await response.text();
+        console.log('Error response body:', errorText);
+    }
 
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.includes("application/json")) {
@@ -45,6 +55,11 @@ async function query(message) {
         fs.writeFileSync(path.join(__dirname, 'output.jpg'), buffer);
         console.log('Image saved as output.jpg');
         return { success: true, message: 'Image saved as output.jpg' };
+    } else if (contentType && contentType.includes("image/png")) {
+        const buffer = await response.buffer();
+        fs.writeFileSync(path.join(__dirname, 'output.png'), buffer);
+        console.log('Image saved as output.png');
+        return { success: true, message: 'Image saved as output.png' };
     } else {
         throw new Error(`Unexpected content type: ${contentType || "unknown"}`);
     }
