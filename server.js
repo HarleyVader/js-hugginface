@@ -11,27 +11,26 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-const worker = new Worker('./worker.js');
-
-let socketId;
-
-io.on('connection', (socket) => {
-    socketId = socket.id;
-    console.log(`New client connected with socket ID: ${socketId}`); // Log the socket id
-
-    socket.on('user interaction', (data) => {
-        if (worker) {
-            worker.postMessage(data);
-        }
-    });
-});
-
-worker.on('message', (result) => {
-    io.to(socketId).emit('result', result);
-});
-
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
+
+io.on('connection', (socket) => {
+    console.log(`New client connected with socket ID: ${socket.id}`); // Log the socket id
+
+    const worker = new Worker('./worker.js');
+
+    socket.on('user interaction', (data) => {
+        worker.postMessage(data);
+    });
+
+    worker.on('message', (result) => {
+        socket.emit('result', result);
+    });
+
+    socket.on('disconnect', () => {
+        worker.terminate();
+    });
+});
 
 server.listen(PORT, () => {
     console.log(`Server is listening on port: ${PORT}`);
