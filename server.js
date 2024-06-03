@@ -42,6 +42,12 @@ io.on('connection', (socket) => {
     });
 
     worker.on('message', (result) => {
+        // Check if result.message is defined
+        if (!result || !result.message) {
+            console.error('Error: result.message is undefined');
+            return;
+        }
+        
         // If the result is an image, generate a URL for it
         if (result.message.endsWith('.png')) {
             const imageName = result.message;
