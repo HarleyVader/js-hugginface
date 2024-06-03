@@ -36,7 +36,7 @@ async function query(message) {
     }
 
     const contentType = response.headers.get("content-type");
-    const imageName = message.replace(/\s+/g, '-');
+    const imageName = message.replace(/\W+/g, '-');
 
     if (contentType && contentType.includes("image/png")) {
         const buffer = await response.buffer();
