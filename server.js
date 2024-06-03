@@ -31,7 +31,7 @@ io.on('connection', (socket) => {
         // If the result is an image, generate a URL for it
         if (result.message.endsWith('.png')) {
             const imageName = result.message;
-            result.url = `http://localhost:${PORT}/images/${imageName}`;
+            result.url = `https://bambisleep.chat/images/${imageName}`;
         }
 
         socket.emit('result', result);
