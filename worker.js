@@ -28,13 +28,6 @@ async function query(message) {
         }
     );
 
-    if (!response.ok) {
-        console.error('Response status:', response.status);
-        console.error('Response status text:', response.statusText);
-        const errorText = await response.text();
-        console.error('Error response body:', errorText);
-    }
-
     const contentType = response.headers.get("content-type");
     const imageName = message.replace(/\s+/g, '-');
 
@@ -42,6 +35,9 @@ async function query(message) {
         const buffer = await response.buffer();
         fs.writeFileSync(path.join(__dirname, 'images', `${imageName}.png`), buffer);
         return { success: true, message: `${imageName}.png` };
+    } else if (contentType && contentType.includes("application/json")) {
+        const data = await response.json();
+        throw new Error(data.error);
     } else {
         throw new Error(`Unexpected content type: ${contentType || "unknown"}`);
     }
