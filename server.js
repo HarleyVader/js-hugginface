@@ -29,7 +29,7 @@ io.on('connection', (socket) => {
 
     worker.on('message', (result) => {
         // If the result is an image, generate a URL for it
-        if (result.message.endsWith('.png')) {
+        if (imageName && result.message.endsWith('.png')) {
             const imageName = result.message;
             result.url = `https://bambisleep.chat/images/${imageName}`;
         }
