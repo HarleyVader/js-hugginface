@@ -1,19 +1,8 @@
 // client.js
 var socket = io();
-console.log('client socket initiated:', socket); // Log the initialized socket
-
-function autoExpand(element) {
-  element.style.height = 'inherit';
-  const computed = window.getComputedStyle(element);
-  const height = parseInt(computed.getPropertyValue('border-top-width'), 10)
-               + parseInt(computed.getPropertyValue('border-bottom-width'), 10)
-               + element.scrollHeight;
-               
-  element.style.height = height + 'px';
-}
 
 // Function to send a message to the server
-function sendMessage(data) {
+function sendMessage() {
   // Get the values from the form fields
   const top_k = document.getElementById('top_k').value;
   const top_p = document.getElementById('top_p').value;
@@ -62,5 +51,5 @@ form.addEventListener('submit', function(event) {
   event.preventDefault();
 
   // Call the sendMessage function
-  sendMessage(data);
+  sendMessage();
 });
