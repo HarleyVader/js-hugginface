@@ -38,15 +38,22 @@ async function query(message) {
     );
     console.log('Fetch finished');
 
+    const contentType = response.headers.get("content-type");
+    const imageName = message.replace(/\s+/g, '-'); // Replace spaces with hyphens
+
     if (!response.ok) {
         console.log('Response status:', response.status);
         console.log('Response status text:', response.statusText);
-        const errorText = await response.text();
-        console.log('Error response body:', errorText);
+        if (contentType && contentType.includes("application/json")) {
+            const errorData = await response.json();
+            console.log('Error response body:', errorData);
+            throw new Error(errorData.error);
+        } else {
+            const errorText = await response.text();
+            console.log('Error response body:', errorText);
+            throw new Error(errorText);
+        }
     }
-
-    const contentType = response.headers.get("content-type");
-    const imageName = message.replace(/\s+/g, '-'); // Replace spaces with hyphens
 
     if (contentType && contentType.includes("application/json")) {
         const result = await response.json();
