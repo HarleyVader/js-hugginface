@@ -13,7 +13,7 @@ function autoExpand(element) {
 }
 
 // Function to send a message to the server
-function sendMessage() {
+function sendMessage(data) {
   // Get the values from the form fields
   const top_k = document.getElementById('top_k').value;
   const top_p = document.getElementById('top_p').value;
@@ -28,12 +28,16 @@ function sendMessage() {
       max_new_tokens: parseInt(max_new_tokens)
   };
 
-  // Create the data object for the query
+  // Get the textarea element
+  const textArea = document.getElementById('text');
+
+  // Get the value of the textarea
+  const inputs = textArea.value;
+
   const data = {
-      inputs: "Can you please let us know more details about your ",
+      inputs: inputs,
       parameters: parameters
   };
-
   // Send the data to the server
   socket.emit('query', data);
 
@@ -55,7 +59,7 @@ socket.on('result', (result) => {
 });
 
 // Get the form element
-const form = document.getElementById('text-genration');
+const form = document.getElementById('text-generation');
 
 // Add event listener for form submit
 form.addEventListener('submit', function(event) {
