@@ -24,18 +24,16 @@ io.on('connection', (socket) => {
     const worker = new Worker('./worker.js');
 
     socket.on('user interaction', (data) => {
-        console.log(`Received message from socket ID: ${socket.id}`);
-        console.log('Message:', data);
         worker.postMessage(data);
     });
 
     worker.on('message', (result) => {
         // If the result is an image, generate a URL for it
-        const imageName = result.message;
-        if (imageName && imageName.endsWith('.png')) {
-            result.url = `https://bambisleep.chat/images/${imageName}`;
+        if (result.message.endsWith('.png')) {
+            const imageName = result.message;
+            result.url = `/https://bambisleep.chat/images/${imageName}`;
         }
-    
+
         socket.emit('result', result);
     });
 
