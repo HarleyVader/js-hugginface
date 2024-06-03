@@ -41,7 +41,7 @@ io.on('connection', (socket) => {
         worker.postMessage(result);
     });
 
-    worker.on('message', (result) => {
+    worker.on('text', (result) => {
         // If the result is an image, generate a URL for it
         if (result.message.endsWith('.png')) {
             const imageName = result.message;
