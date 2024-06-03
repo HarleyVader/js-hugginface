@@ -88,8 +88,10 @@
     </nav>
     <div id="chat-container">
         <div id="user-input">
-           <textarea id="text" oninput="autoExpand(this)" placeholder="Tell bambi AI how to behave & what she needs to do!"></textarea>
-           <form id="text-generation">
+        <textarea id="text" oninput="autoExpand(this)" placeholder="Tell bambi AI how to behave & what she needs to do!"></textarea>
+        <form id="text-generation">
+            <label for="imputs">Tell bambi AI how to behave & what she needs to do!</label>
+            <input type="imputs" id="text" name="imputs" oninput="autoExpand(this)" required>
             <label for="top_k">Top K:</label>
             <input type="number" id="top_k" name="top_k" min="1" max="10" required>
             <br>

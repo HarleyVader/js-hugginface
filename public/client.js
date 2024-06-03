@@ -42,7 +42,7 @@ function sendMessage(data) {
   socket.emit('query', data);
 
   // Update the user-message div
-  document.getElementById('user-message').innerText = JSON.stringify(data);
+  document.getElementById('ai-reply').innerText = JSON.stringify(data);
 }
 
 socket.on('result', (result) => {
