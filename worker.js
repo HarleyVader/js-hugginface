@@ -1,9 +1,7 @@
-// worker.js
-require('dotenv').config();
 const fetch = require('node-fetch');
-const { parentPort } = require('worker_threads');
 const fs = require('fs');
 const path = require('path');
+const { parentPort } = require('worker_threads');
 
 parentPort.on('message', async (message) => {
     try {
