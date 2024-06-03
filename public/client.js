@@ -50,11 +50,6 @@ socket.on('result', (result) => {
   // Check if the result is text
   if (result.text) {
       aiReply.textContent = result.text;
-  } else if (result.url) {
-      // If the result is an image, set the src attribute of an img element
-      const img = document.createElement('img');
-      img.src = result.url;
-      aiReply.appendChild(img);
   }
 });
 
@@ -67,5 +62,5 @@ form.addEventListener('submit', function(event) {
   event.preventDefault();
 
   // Call the sendMessage function
-  sendMessage();
+  sendMessage(data);
 });
