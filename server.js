@@ -23,25 +23,31 @@ io.on('connection', (socket) => {
     const worker = new Worker('./worker.js');
 
     worker.on('message', (result) => {
-        // If the result is an image, generate a URL for it
-        if (result.message.endsWith('.jpg') || result.message.endsWith('.png')) {
+        // If the result is a .png image, generate a URL for it
+        if (result.message.endsWith('.png')) {
             result.url = `https://bambisleep.chat/images/${result.message}`;
         }
-
+    
         socket.emit('result', result);
     });
 
-    socket.on('message', (message) => {
+    // Listen for 'user interaction' events instead of 'message' events
+    socket.on('user interaction', (message) => {
         console.log(`Received message from client with socket ID ${socket.id}:`, message);
         console.log(`User prompt: ${message}`); // Log the user prompt
         worker.postMessage(message);
     });
-
+    
+    socket.on('log', (message) => {
+        console.log(`Log from client with socket ID ${socket.id}:`, message);
+    });
+    
     socket.on('disconnect', () => {
         worker.terminate();
     });
 });
 
+// Start the server
 server.listen(PORT, () => {
-    console.log(`Server is listening on port: ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
