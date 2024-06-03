@@ -42,19 +42,16 @@ io.on('connection', (socket) => {
     });
 
     worker.on('message', (result) => {
-        /*
-        // Check if result.message is defined [ENABLE TO ERROR GENERATION WITHOUT CRASHING THE SERVER]
-        if (!result || !result.message) {
-            console.error('Error: result.message is undefined');
-            return;
-        }
-        */
         // If the result is an image, generate a URL for it
         if (result.message.endsWith('.png')) {
             const imageName = result.message;
             result.url = `https://bambisleep.chat/images/${imageName}`;
+        } else {
+            // If the result is text, just send it as is
+            result.text = result.message;
         }
-
+    
+        // Emit the result to the client
         socket.emit('result', result);
     });
 

@@ -1,4 +1,4 @@
-// Connect to the server
+// client.js
 var socket = io();
 console.log('client socket initiated:', socket); // Log the initialized socket
 
@@ -14,27 +14,54 @@ function autoExpand(element) {
 
 // Function to send a message to the server
 function sendMessage() {
-    var message = document.getElementById('message').value;
-  
-    if (message.trim() !== '') {
-      console.log('Sending message:', message); // Log the message being sent
-      socket.emit('user interaction', message);
-      
-      // Update the user-message div
-      document.getElementById('user-message').innerText = message;
-    }
-  
-    // Clear input fields after sending
-    document.getElementById('message').value = '';
+  // Get the values from the form fields
+  const top_k = document.getElementById('top_k').value;
+  const top_p = document.getElementById('top_p').value;
+  const temperature = document.getElementById('temperature').value;
+  const max_new_tokens = document.getElementById('max_new_tokens').value;
+
+  // Create the parameters object
+  const parameters = {
+      top_k: parseInt(top_k),
+      top_p: parseFloat(top_p),
+      temperature: parseFloat(temperature),
+      max_new_tokens: parseInt(max_new_tokens)
+  };
+
+  // Create the data object for the query
+  const data = {
+      inputs: "Can you please let us know more details about your ",
+      parameters: parameters
+  };
+
+  // Send the data to the server
+  socket.emit('query', data);
+
+  // Update the user-message div
+  document.getElementById('user-message').innerText = JSON.stringify(data);
+}
+
+socket.on('result', (result) => {
+  const aiReply = document.getElementById('ai-reply');
+  // Check if the result is text
+  if (result.text) {
+      aiReply.textContent = result.text;
+  } else if (result.url) {
+      // If the result is an image, set the src attribute of an img element
+      const img = document.createElement('img');
+      img.src = result.url;
+      aiReply.appendChild(img);
   }
-  
-  // Listen for result events from the server
-  socket.on('result', function(result) {
-      if (result.url) {
-          const imgElement = document.getElementById('ai-image-display');
-          imgElement.src = result.url;
-      }
-  });
-  
-  // Add event listeners for buttons
-  document.getElementById('send').addEventListener('click', sendMessage);
+});
+
+// Get the form element
+const form = document.getElementById('text-genration');
+
+// Add event listener for form submit
+form.addEventListener('submit', function(event) {
+  // Prevent the form from submitting normally
+  event.preventDefault();
+
+  // Call the sendMessage function
+  sendMessage();
+});

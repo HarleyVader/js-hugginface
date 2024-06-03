@@ -2,8 +2,6 @@
 require('dotenv').config();
 const fetch = require('node-fetch');
 const { parentPort } = require('worker_threads');
-const fs = require('fs');
-const path = require('path');
 
 parentPort.on('message', async (message) => {
     try {
@@ -14,38 +12,19 @@ parentPort.on('message', async (message) => {
         parentPort.postMessage({ error: error.message });
     }
 });
-//"https://c5jmh0pkq7fg8o12.us-east-1.aws.endpoints.huggingface.cloud",
 
-async function query(message) {
+async function query(data) {
     const response = await fetch(
-        "https://iozeoebazkwbd9nv.us-east-1.aws.endpoints.huggingface.cloud",
+        "https://mff03nee2jrxc40h.us-east-1.aws.endpoints.huggingface.cloud",
         {
             headers: { 
-                "Accept" : "image/png",
-                "Content-Type": "application/json",
-                height: 256,
-                weight: 256,
+                "Accept" : "application/json",
+                "Content-Type": "application/json" 
             },
             method: "POST",
-            body: JSON.stringify({ inputs: message }),
+            body: JSON.stringify(data),
         }
     );
-
-    if (!response.ok) {
-        console.error('Response status:', response.status);
-        console.error('Response status text:', response.statusText);
-        const errorText = await response.text();
-        console.error('Error response body:', errorText);
-    }
-
-    const contentType = response.headers.get("content-type");
-    const imageName = message.replace(/\W+/g, '-');
-
-    if (contentType && contentType.includes("image/png")) {
-        const buffer = await response.buffer();
-        fs.writeFileSync(path.join(__dirname, 'images', `${imageName}.png`), buffer);
-        return { success: true, message: `${imageName}.png` };
-    } else {
-        throw new Error(`Unexpected content type: ${contentType || "unknown"}`);
-    }
+    const result = await response.json();
+    return result;
 }
