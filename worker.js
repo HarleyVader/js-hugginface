@@ -22,7 +22,9 @@ async function query(message) {
         {
             headers: { 
                 "Accept" : "image/png",
-                "Content-Type": "application/json" 
+                "Content-Type": "application/json",
+                height: 256,
+                weight: 256,
             },
             method: "POST",
             body: JSON.stringify({ inputs: message }),
