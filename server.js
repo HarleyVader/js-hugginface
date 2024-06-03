@@ -33,6 +33,7 @@ io.on('connection', (socket) => {
 
     socket.on('message', (message) => {
         console.log(`Received message from client with socket ID ${socket.id}:`, message);
+        console.log(`User prompt: ${message}`); // Log the user prompt
         worker.postMessage(message);
     });
 
