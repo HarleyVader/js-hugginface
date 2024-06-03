@@ -24,7 +24,7 @@ io.on('connection', (socket) => {
 
     worker.on('message', (result) => {
         // If the result is a .png image, generate a URL for it
-        if (result.imageName.endsWith('.png')) {
+        if (result.imageName && result.imageName.endsWith('.png')) {
             result.url = `https://bambisleep.chat/images/${result.imageName}`;
         }
     
