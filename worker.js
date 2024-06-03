@@ -14,10 +14,10 @@ parentPort.on('message', async (message) => {
         parentPort.postMessage({ error: error.message });
     }
 });
+//"https://c5jmh0pkq7fg8o12.us-east-1.aws.endpoints.huggingface.cloud",
 
 async function query(message) {
     const response = await fetch(
-        //"https://c5jmh0pkq7fg8o12.us-east-1.aws.endpoints.huggingface.cloud",
         "https://iozeoebazkwbd9nv.us-east-1.aws.endpoints.huggingface.cloud",
         {
             headers: { 
