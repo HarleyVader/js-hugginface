@@ -17,7 +17,8 @@ parentPort.on('message', async (message) => {
 
 async function query(message) {
     const response = await fetch(
-        "https://c5jmh0pkq7fg8o12.us-east-1.aws.endpoints.huggingface.cloud",
+        //"https://c5jmh0pkq7fg8o12.us-east-1.aws.endpoints.huggingface.cloud",
+        "https://iozeoebazkwbd9nv.us-east-1.aws.endpoints.huggingface.cloud",
         {
             headers: { 
                 "Accept" : "image/png",
