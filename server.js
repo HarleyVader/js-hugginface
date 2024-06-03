@@ -4,7 +4,6 @@ const http = require('http');
 const { Server } = require('socket.io');
 const { Worker } = require('worker_threads');
 const path = require('path');
-const fs = require('fs').promises;
 
 const PORT = 6969;
 
@@ -23,18 +22,12 @@ io.on('connection', (socket) => {
 
     const worker = new Worker('./worker.js');
 
-    socket.on('user interaction', (data) => {
-        console.log(`Received message from client with socket ID ${socket.id}:`, data);
-        worker.postMessage(data);
-    });
-
     worker.on('message', (result) => {
         // If the result is an image, generate a URL for it
-        if (result.message && result.message.endsWith('.png')) {
-            const imageName = result.message;
-            result.url = `/https://bambisleep.chat/images/${imageName}`;
+        if (result.message.endsWith('.jpg') || result.message.endsWith('.png')) {
+            result.url = `https://bambisleep.chat/images/${result.message}`;
         }
-    
+
         socket.emit('result', result);
     });
 
