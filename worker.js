@@ -5,17 +5,10 @@ const { parentPort } = require('worker_threads');
 const fs = require('fs');
 const path = require('path');
 
-console.log('Worker script started'); // Log when the worker script starts
-
 parentPort.on('message', async (message) => {
-    console.log('Received message from parent:', message); // Log the received message
-    console.log('Starting query'); // Log before starting the query
     try {
         const result = await query(message);
-        console.log('Query finished'); // Log after the query finishes
-        console.log('Posting result to parent'); // Log before posting the result to the parent
         parentPort.postMessage(result);
-        console.log('Posted result to parent', result); // Log after posting the result to the parent
     } catch (error) {
         console.error('Error during query:', error);
         parentPort.postMessage({ error: error.message });
@@ -23,8 +16,6 @@ parentPort.on('message', async (message) => {
 });
 
 async function query(message) {
-    console.log('Querying with message:', message);
-    console.log('Starting fetch');
     const response = await fetch(
         "https://c5jmh0pkq7fg8o12.us-east-1.aws.endpoints.huggingface.cloud",
         {
@@ -33,30 +24,24 @@ async function query(message) {
                 "Content-Type": "application/json" 
             },
             method: "POST",
-            body: JSON.stringify({ inputs: message }), // Convert message to a JSON object
+            body: JSON.stringify({ inputs: message }),
         }
     );
-    console.log('Fetch finished');
 
     if (!response.ok) {
-        console.log('Response status:', response.status);
-        console.log('Response status text:', response.statusText);
+        console.error('Response status:', response.status);
+        console.error('Response status text:', response.statusText);
         const errorText = await response.text();
-        console.log('Error response body:', errorText);
+        console.error('Error response body:', errorText);
     }
 
     const contentType = response.headers.get("content-type");
-    const imageName = message.replace(/\s/g, '-') + '.png'; // Replace spaces with hyphens and append .png
-    if (contentType && contentType.includes("image/jpeg")) {
+    const imageName = message.replace(/\s+/g, '-');
+
+    if (contentType && contentType.includes("image/png")) {
         const buffer = await response.buffer();
-        fs.writeFileSync(path.join(__dirname, imageName), buffer);
-        console.log(`Image saved as ${imageName}`);
-        return { success: true, message: `Image saved as ${imageName}`, imageName: imageName };
-    } else if (contentType && contentType.includes("image/png")) {
-        const buffer = await response.buffer();
-        fs.writeFileSync(path.join(__dirname, imageName), buffer);
-        console.log(`Image saved as ${imageName}`);
-        return { success: true, message: `Image saved as ${imageName}`, imageName: imageName };
+        fs.writeFileSync(path.join(__dirname, 'images', `${imageName}.png`), buffer);
+        return { success: true, message: `${imageName}.png` };
     } else {
         throw new Error(`Unexpected content type: ${contentType || "unknown"}`);
     }

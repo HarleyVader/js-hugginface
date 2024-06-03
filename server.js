@@ -4,6 +4,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const { Worker } = require('worker_threads');
 const path = require('path');
+const fs = require('fs').promises;
 
 const PORT = 6969;
 
@@ -22,32 +23,25 @@ io.on('connection', (socket) => {
 
     const worker = new Worker('./worker.js');
 
+    socket.on('user interaction', (data) => {
+        worker.postMessage(data);
+    });
+
     worker.on('message', (result) => {
-        // If the result is a .png image, generate a URL for it
-        if (result.imageName && result.imageName.endsWith('.png')) {
-            result.url = `https://bambisleep.chat/images/${result.imageName}`;
+        // If the result is an image, generate a URL for it
+        if (result.message.endsWith('.png')) {
+            const imageName = result.message;
+            result.url = `https://bambisleep.chat/images/${imageName}`;
         }
-    
+
         socket.emit('result', result);
     });
 
-    // Listen for 'user interaction' events instead of 'message' events
-    socket.on('user interaction', (message) => {
-        console.log(`Received message from client with socket ID ${socket.id}:`, message);
-        console.log(`User prompt: ${message}`); // Log the user prompt
-        worker.postMessage(message);
-    });
-    
-    socket.on('log', (message) => {
-        console.log(`Log from client with socket ID ${socket.id}:`, message);
-    });
-    
     socket.on('disconnect', () => {
         worker.terminate();
     });
 });
 
-// Start the server
 server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is listening on port: ${PORT}`);
 });
