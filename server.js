@@ -4,6 +4,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const { Worker } = require('worker_threads');
 const path = require('path');
+const fs = require('fs').promises;
 
 const PORT = 6969;
 
@@ -13,6 +14,9 @@ const io = new Server(server);
 
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve images from the "images" directory
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 io.on('connection', (socket) => {
     console.log(`New client connected with socket ID: ${socket.id}`); // Log the socket id
@@ -24,6 +28,12 @@ io.on('connection', (socket) => {
     });
 
     worker.on('message', (result) => {
+        // If the result is an image, generate a URL for it
+        if (result.message.endsWith('.png')) {
+            const imageName = result.message;
+            result.url = `http://localhost:${PORT}/images/${imageName}`;
+        }
+
         socket.emit('result', result);
     });
 

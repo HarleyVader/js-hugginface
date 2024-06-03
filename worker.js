@@ -46,20 +46,13 @@ async function query(message) {
     }
 
     const contentType = response.headers.get("content-type");
-    if (contentType && contentType.includes("application/json")) {
-        const result = await response.json();
-        console.log('Received result from query:', result);
-        return result;
-    } else if (contentType && contentType.includes("image/jpeg")) {
+    const imageName = message.replace(/\s+/g, '-'); // Replace spaces with hyphens
+
+    if (contentType && contentType.includes("image/png")) {
         const buffer = await response.buffer();
-        fs.writeFileSync(path.join(__dirname, 'output.jpg'), buffer);
-        console.log('Image saved as output.jpg');
-        return { success: true, message: 'Image saved as output.jpg' };
-    } else if (contentType && contentType.includes("image/png")) {
-        const buffer = await response.buffer();
-        fs.writeFileSync(path.join(__dirname, 'output.png'), buffer);
-        console.log('Image saved as output.png');
-        return { success: true, message: 'Image saved as output.png' };
+        fs.writeFileSync(path.join(__dirname, 'images', `${imageName}.png`), buffer);
+        console.log(`Image saved as ${imageName}.png`);
+        return { success: true, message: `${imageName}.png` };
     } else {
         throw new Error(`Unexpected content type: ${contentType || "unknown"}`);
     }

@@ -14,24 +14,27 @@ function autoExpand(element) {
 
 // Function to send a message to the server
 function sendMessage() {
-  var message = document.getElementById('message').value;
-
-  if (message.trim() !== '') {
-    console.log('Sending message:', message); // Log the message being sent
-    socket.emit('user interaction', message);
-    
-    // Update the user-message div
-    document.getElementById('user-message').innerText = message;
+    var message = document.getElementById('message').value;
+  
+    if (message.trim() !== '') {
+      console.log('Sending message:', message); // Log the message being sent
+      socket.emit('user interaction', message);
+      
+      // Update the user-message div
+      document.getElementById('user-message').innerText = message;
+    }
+  
+    // Clear input fields after sending
+    document.getElementById('message').value = '';
   }
-
-  // Clear input fields after sending
-  document.getElementById('message').value = '';
-}
-
-// Listen for chat message events from the server
-socket.on('user interaction', function(msg) {
-  console.log('Received chat message:', msg); // Log the received message
-});
-
-// Add event listeners for buttons
-document.getElementById('send').addEventListener('click', sendMessage);
+  
+  // Listen for result events from the server
+  socket.on('result', function(result) {
+      if (result.url) {
+          const imgElement = document.getElementById('ai-image-display');
+          imgElement.src = result.url;
+      }
+  });
+  
+  // Add event listeners for buttons
+  document.getElementById('send').addEventListener('click', sendMessage);
