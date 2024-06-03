@@ -24,6 +24,8 @@ io.on('connection', (socket) => {
     const worker = new Worker('./worker.js');
 
     socket.on('user interaction', (data) => {
+        console.log(`Received message from socket ID: ${socket.id}`);
+        console.log('Message:', data);
         worker.postMessage(data);
     });
 
