@@ -46,22 +46,17 @@ async function query(message) {
     }
 
     const contentType = response.headers.get("content-type");
-    const imageName = message.replace(/\s+/g, '-'); // Replace spaces with hyphens
-
-    if (contentType && contentType.includes("application/json")) {
-        const result = await response.json();
-        console.log('Received result from query:', result);
-        return result;
-    } else if (contentType && contentType.includes("image/jpeg")) {
+    const imageName = message.replace(/\s/g, '-') + '.png'; // Replace spaces with hyphens and append .png
+    if (contentType && contentType.includes("image/jpeg")) {
         const buffer = await response.buffer();
-        fs.writeFileSync(path.join(__dirname, 'images', `${imageName}.jpg`), buffer);
-        console.log(`Image saved as ${imageName}.jpg`);
-        return { success: true, message: `${imageName}.jpg` };
+        fs.writeFileSync(path.join(__dirname, imageName), buffer);
+        console.log(`Image saved as ${imageName}`);
+        return { success: true, message: `Image saved as ${imageName}`, imageName: imageName };
     } else if (contentType && contentType.includes("image/png")) {
         const buffer = await response.buffer();
-        fs.writeFileSync(path.join(__dirname, 'images', `${imageName}.png`), buffer);
-        console.log(`Image saved as ${imageName}.png`);
-        return { success: true, message: `${imageName}.png` };
+        fs.writeFileSync(path.join(__dirname, imageName), buffer);
+        console.log(`Image saved as ${imageName}`);
+        return { success: true, message: `Image saved as ${imageName}`, imageName: imageName };
     } else {
         throw new Error(`Unexpected content type: ${contentType || "unknown"}`);
     }
