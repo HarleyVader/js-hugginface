@@ -35,7 +35,7 @@ io.on('connection', (socket) => {
         console.log(`Received message from client with socket ID ${socket.id}:`, message);
         worker.postMessage(message);
     });
-    
+
     socket.on('disconnect', () => {
         worker.terminate();
     });
