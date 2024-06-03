@@ -4,6 +4,7 @@ const fetch = require('node-fetch');
 const { parentPort } = require('worker_threads');
 
 parentPort.on('message', async (message) => {
+    console.log('Received data from server:', message);
     try {
         const result = await query(message);
         parentPort.postMessage(result);

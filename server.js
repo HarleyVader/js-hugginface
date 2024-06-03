@@ -36,12 +36,12 @@ io.on('connection', (socket) => {
 
     const worker = new Worker('./worker.js');
 
-    socket.on('user interaction', (result) => {
+    socket.on('query', (result) => {
         console.log(`Received prompt from client with socket ID ${socket.id}: ${result.message}`);
         worker.postMessage(result);
     });
 
-    worker.on('text', (result) => {
+    worker.on('message', (result) => {
         // If the result is an image, generate a URL for it
         if (result.message.endsWith('.png')) {
             const imageName = result.message;
