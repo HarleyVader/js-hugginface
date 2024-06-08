@@ -35,7 +35,7 @@ function sendMessage() {
 
   const data = {
       inputs: inputs,
-      parameters: parameters
+      //parameters: parameters
   };
   // Send the data to the server
   socket.emit('query', data);
