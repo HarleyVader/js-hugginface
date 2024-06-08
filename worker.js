@@ -27,5 +27,6 @@ async function query(data) {
         }
     );
     const result = await response.json();
+    console.log('Received result from Hugging Face:', result);
     return result;
 }

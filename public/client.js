@@ -1,6 +1,16 @@
 // client.js
 var socket = io();
 
+function autoExpand(element) {
+  element.style.height = 'inherit';
+  const computed = window.getComputedStyle(element);
+  const height = parseInt(computed.getPropertyValue('border-top-width'), 10)
+               + parseInt(computed.getPropertyValue('border-bottom-width'), 10)
+               + element.scrollHeight;
+               
+  element.style.height = height + 'px';
+}
+
 // Function to send a message to the server
 function sendMessage() {
   // Get the values from the form fields
@@ -29,17 +39,11 @@ function sendMessage() {
   };
   // Send the data to the server
   socket.emit('query', data);
-
-  // Update the user-message div
-  document.getElementById('ai-reply').innerText = JSON.stringify(data);
 }
 
-socket.on('result', (result) => {
+socket.on('data', (data) => {
   const aiReply = document.getElementById('ai-reply');
-  // Check if the result is text
-  if (result.text) {
-      aiReply.textContent = result.text;
-  }
+  aiReply.textContent = data[0].generated_text;
 });
 
 // Get the form element
