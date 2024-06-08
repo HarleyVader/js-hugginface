@@ -39,11 +39,24 @@ function sendMessage() {
   };
   // Send the data to the server
   socket.emit('query', data);
+
+  // Update the user-message div with the last prompt sent to the server
+  const userMessage = document.getElementById('user-send');
+  userMessage.textContent = inputs;
 }
 
 socket.on('data', (data) => {
-  const aiReply = document.getElementById('ai-reply');
-  aiReply.textContent = data[0].generated_text;
+  // Get the container for the AI replies
+  const aiReplyContainer = document.getElementById('ai-reply');
+
+  // Create a new p element
+  const newReply = document.createElement('p');
+
+  // Set the text of the p element to the AI's reply
+  newReply.textContent = data[0].generated_text;
+
+  // Add the new p element to the container
+  aiReplyContainer.appendChild(newReply);
 });
 
 // Get the form element
