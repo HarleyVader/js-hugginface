@@ -34,7 +34,7 @@ function sendMessage() {
   const inputs = textArea.value;
 
   const data = {
-      inputs: inputs,
+      inputs: inputs
       //parameters: parameters
   };
   // Send the data to the server
