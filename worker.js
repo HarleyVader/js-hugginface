@@ -16,7 +16,7 @@ parentPort.on('message', async (message) => {
 
 async function query(data) {
     const response = await fetch(
-        "https://n384nkt6iw31slch.us-east-1.aws.endpoints.huggingface.cloud",
+        "https://zuxxiwq1qfdwe3gd.us-east-1.aws.endpoints.huggingface.cloud",
         {
             headers: { 
                 "Accept" : "application/json",
