@@ -5,7 +5,7 @@ const { LMStudioClient } = require('@lmstudio/sdk');
 
 let llama3; // Declare llama3 outside to make it accessible in the query function
 
-async function query(input) {
+async function main() {
     try {
       // Configure LMStudioClient to use the remote server
       const client = new LMStudioClient({
@@ -13,20 +13,38 @@ async function query(input) {
       });
   
       // Load a model
-      llama3 = await client.llm.get("fhai50032/RolePlayLake-7B-GGUF/roleplaylake-7b.Q5_K_M.gguf", {
+      llama3 = await client.llm.load("fhai50032/RolePlayLake-7B-GGUF/roleplaylake-7b.Q5_K_M.gguf", {
         config: { gpuOffload: "max" },
         noHup: true,
       });
-  
-      // Create a text completion prediction
-      const prediction = llama3.complete(input);
-  
-      // Stream the response
-      for await (const text of prediction) {
-        process.stdout.write(text);
-        message += text;
+      
+        console.log('Model loaded successfully');
     }
-        return { message:data };
+    catch (error) {
+        console.error('Error during model loading:', error);
+        throw error;
+    }
+}
+
+
+// Define the query function
+async function query(input) {
+    try {
+        // Ensure the model is loaded
+        if (!llama3) {
+            throw new Error("Model not loaded");
+        }
+
+        // Use the model to generate a response based on the input
+        const prediction = llama3.complete(input);
+        let responseText = '';
+
+        // Stream the response
+        for await (const text of prediction) {
+            responseText += text;
+        }
+
+        return { data: responseText };
     } catch (error) {
         console.error('Error during model query:', error);
         throw error; // Rethrow the error to be caught in the parentPort.on message handler
@@ -44,3 +62,5 @@ parentPort.on('message', async (message) => {
         parentPort.postMessage({ error: error.message });
     }
 });
+
+main();
