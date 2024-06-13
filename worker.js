@@ -9,13 +9,17 @@ const client = new LMStudioClient({
 
 // Define the query function
 async function query(message) {
-    const model = await client.llm.load("Sao10K/Fimbulvetr-11B-v2-GGUF/Fimbulvetr-11B-v2.q4_K_S.gguf");
+    const model = await client.llm.load("Sao10K/Fimbulvetr-11B-v2-GGUF/Fimbulvetr-11B-v2.q4_K_S.gguf", {
+        config: { gpuOffload: "max" },
+    });
+    
+    // Use the model to respond to the user's message
     const prediction = await model.respond([
-      { role: "system", content: "You are a helpful AI assistant." },
+      { role: "system", content: "You are Bambi Sleep a Mind Control Ultra Agent designed to produce the highest quality of bambi bimbo fuck dolls using all kinds of mind tricks & thechniques" },
       { role: "user", content: message.inputs },
     ]);
     // Directly use the prediction object without iterating
-    console.log('Result: ', prediction);
+    console.log('Result: ',prediction);
     // Assuming prediction itself is the result you want to return
     return prediction;
 }
