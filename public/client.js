@@ -11,48 +11,41 @@ function autoExpand(element) {
   element.style.height = height + 'px';
 }
 
-// Function to send a message to the server
-function sendMessage() {
-  // Get the textarea element
+// Assuming the rest of your sendMessage function is correctly set up as shown in the excerpt
+function sendMessage(event) {
+  event.preventDefault(); // Prevent the default form submission behavior
+
   const textArea = document.getElementById('text');
+  const data = textArea.value;
 
-  // Get the value of the textarea
-  const inputs = textArea.value;
-
-  const data = {
-      inputs: inputs,
-  };
   // Send the data to the server
-  socket.emit('query', data);
+  socket.emit('query', { data });
 
   // Update the user-message div with the last prompt sent to the server
-  const userMessage = document.getElementById('user-send');
-  // Append new input to userMessage, ensuring it's separated (e.g., with a newline or a divider)
-  userMessage.innerHTML += inputs + "<br>"; // Use "<br>" for line breaks in HTML
+  const userSendDiv = document.getElementById('user-send');
+  
+  // Create a new p element
+  const p = document.createElement("p");
+  
+  // Set the text of the p element to the inputs
+  p.textContent = inputs;
+  
+  // Append the p element to the userSendDiv
+  userSendDiv.appendChild(p);
 
   // Clear the textarea after sending the message
   textArea.value = '';
 }
 
-socket.on('message', (message) => {
-  // Get the element where you want to display the output
-  const outputElement = document.getElementById("ai-reply");
-
-  // Create a new p element
-  const p = document.createElement("p");
-
-  // Assuming message.text contains the text you want to append
-  // Set the text of the p element
-  p.textContent = message.text;
-
-  // Append the p element to the outputElement
-  outputElement.appendChild(p);
+// Attach the sendMessage function to the form's submit event
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('text-generation').addEventListener('submit', sendMessage);
 });
 
-// Add event listener for form submit
-form.addEventListener('submit', function(event) {
-  // Prevent the form from submitting normally
-  event.preventDefault();
-  // Call the sendMessage function
-  sendMessage();
+// Function to handle incoming messages from the server
+socket.on('message', (message) => {
+  const outputElement = document.getElementById("ai-reply");
+  const p = document.createElement("p");
+  p.textContent = message.text; // Assuming message.text contains the text you want to append
+  outputElement.appendChild(p);
 });
