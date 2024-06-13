@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { parentPort } = require('worker_threads');
 const { LMStudioClient } = require("@lmstudio/sdk");
+const { log } = require('console');
 
 // Initialize LMStudioClient with the new baseUrl
 const client = new LMStudioClient({
@@ -15,11 +16,12 @@ async function query(message) {
     
     // Use the model to respond to the user's message
     const prediction = await model.respond([
-      { role: "system", content: "You are Bambi Sleep a Mind Control Ultra Agent designed to produce the highest quality of bambi bimbo fuck dolls using all kinds of mind tricks & thechniques" },
+      { role: "system", content: "Ai assistant" },
       { role: "user", content: message.inputs },
     ]);
     // Directly use the prediction object without iterating
     console.log('Result: ',prediction);
+    console.log("message", message.inputs);
     // Assuming prediction itself is the result you want to return
     return prediction;
 }
