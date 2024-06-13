@@ -19,8 +19,9 @@ async function query(data) {
         "http://localhost:6969/v1",
         {
             headers: { 
-                "Accept" : "application/json",
-                "Content-Type": "application/json" 
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "api_key": "lm-studio" // Assuming api_key should be in headers
             },
             method: "POST",
             body: JSON.stringify(data),
