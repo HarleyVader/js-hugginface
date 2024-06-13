@@ -23,14 +23,14 @@ async function main() {
     const client = new LMStudioClient({ 
         baseUrl: "ws://192.168.0.178:1234" 
     });
-    const model = await client.llm.load("lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF");
+    const model = await client.llm.load("Sao10K/Fimbulvetr-11B-v2-GGUF/Fimbulvetr-11B-v2.q4_K_S.gguf");
   
     // Predict!
     const prediction = model.respond([
       { role: "system", content: "You are a helpful AI assistant." },
       { role: "user", content: "What is the meaning of life?" },
     ]);
-    for await (const text of prediction) {
+    for await (const result of prediction) {
       process.stdout.write(result);
     }
   }
