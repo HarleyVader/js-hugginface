@@ -15,7 +15,7 @@ parentPort.on('message', async (message) => {
 });
 
 async function query(data) {
-    const response = await fetch("http://localhost:6969/v1/chat/completions", {
+    const response = await fetch("http://localhost:6969/v1/embeddings", {
         headers: { 
             "Content-Type": "application/json",
         },
