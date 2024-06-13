@@ -43,10 +43,13 @@ socket.on('data', (data) => {
 
   // Add the new p element to the container
   aiReplyContainer.appendChild(newReply);
+  
+  // Update the result element with the AI's reply
+  const resultElement = document.querySelector('.result');
+  if (resultElement) {
+    resultElement.textContent = data.text;
+  }
 });
-
-// Get the form element
-const form = document.getElementById('text-generation');
 
 // Add event listener for form submit
 form.addEventListener('submit', function(event) {
