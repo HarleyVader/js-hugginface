@@ -43,20 +43,30 @@ io.on('connection', (socket) => {
     });
 
     worker.on('message', (data) => {
-        // Check if result and result.message are defined
-        if (data && data.message) {
-            // If the result is an image, generate a URL for it
+        let formattedData = {};
+    
+        // Check if data is a string - directly assign it
+        if (typeof data === 'string') {
+            formattedData.text = data;
+        } else if (data && data.message) {
+            // Check if the message is an image
             if (data.message.endsWith('.png')) {
                 const imageName = data.message;
-                data.url = `https://bambisleep.chat/images/${imageName}`;
+                formattedData.url = `https://bambisleep.chat/images/${imageName}`;
             } else {
-                // If the result is text, just send it as is
-                data.text = data.message;
+                // If the message is text, assign it
+                formattedData.text = data.message;
             }
+        } else if (data && data.text) {
+            // Handle data with a 'text' property
+            formattedData.text = data.text;
+        } else {
+            // Handle other types of data or errors
+            formattedData.text = "Error: Invalid data received from worker.";
         }
     
-        // Emit the result to the client
-        socket.emit('data', data);
+        // Emit the formatted result to the client
+        socket.emit('data', formattedData);
     });
 
 
