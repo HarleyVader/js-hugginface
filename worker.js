@@ -7,6 +7,21 @@ const client = new LMStudioClient({
   baseUrl: "ws://192.168.0.178:1234/v1",
 });
 
+// Define the query function
+async function query(message) {
+    // Assuming message contains the input for the model
+    const model = await client.llm.load("your-model-name-here");
+    const prediction = await model.respond([
+      { role: "system", content: "You are a helpful AI assistant." },
+      { role: "user", content: message.inputs }, // Use the message as input
+    ]);
+    let result = "";
+    for await (const part of prediction) {
+      result += part;
+    }
+    return result;
+}
+
 parentPort.on('message', async (message) => {
     console.log('Received data from server:', message);
     try {
@@ -17,22 +32,3 @@ parentPort.on('message', async (message) => {
         parentPort.postMessage({ error: error.message });
     }
 });
-
-async function main() {
-    // Create a client to connect to LM Studio, then load a model
-    const client = new LMStudioClient({ 
-        baseUrl: "ws://192.168.0.178:1234" 
-    });
-    const model = await client.llm.load("Sao10K/Fimbulvetr-11B-v2-GGUF/Fimbulvetr-11B-v2.q4_K_S.gguf");
-  
-    // Predict!
-    const prediction = model.respond([
-      { role: "system", content: "You are a helpful AI assistant." },
-      { role: "user", content: "What is the meaning of life?" },
-    ]);
-    for await (const result of prediction) {
-      process.stdout.write(result);
-    }
-  }
-  
-  main();
