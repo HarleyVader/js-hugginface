@@ -4,25 +4,28 @@ const { parentPort } = require('worker_threads');
 const { LMStudioClient } = require('@lmstudio/sdk');
 
 async function main() {
-  try {
-    const client = new LMStudioClient();
-
-    // Load a model
-    const llama3 = await client.llm.load("Sao10K/Fimbulvetr-11B-v2-GGUF/Fimbulvetr-11B-v2.q4_K_S.gguf", {
-      config: { gpuOffload: "max" },
-    });
-
-    // Create a text completion prediction
-    const prediction = llama3.complete("The meaning of life is");
-
-    // Stream the response
-    for await (const text of prediction) {
-      process.stdout.write(text);
+    try {
+      // Configure LMStudioClient to use the remote server
+      const client = new LMStudioClient({
+        serverUrl: 'http://192.168.0.178:1234'
+      });
+  
+      // Load a model
+      const llama3 = await client.llm.load("Sao10K/Fimbulvetr-11B-v2-GGUF/Fimbulvetr-11B-v2.q4_K_S.gguf", {
+        config: { gpuOffload: "max" },
+      });
+  
+      // Create a text completion prediction
+      const prediction = llama3.complete("The meaning of life is");
+  
+      // Stream the response
+      for await (const text of prediction) {
+        process.stdout.write(text);
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
     }
-  } catch (error) {
-    console.error("An error occurred:", error);
   }
-}
 
 main();
 
