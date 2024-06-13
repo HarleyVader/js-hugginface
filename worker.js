@@ -5,7 +5,7 @@ const { LMStudioClient } = require('@lmstudio/sdk');
 
 let llama3; // Declare llama3 outside to make it accessible in the query function
 
-async function main() {
+async function query(input) {
     try {
       // Configure LMStudioClient to use the remote server
       const client = new LMStudioClient({
@@ -24,14 +24,14 @@ async function main() {
       // Stream the response
       for await (const text of prediction) {
         process.stdout.write(text);
-      }
+        responseText += text;
+    }
+        return { data: responseText };
     } catch (error) {
-      console.error("An error occurred:", error);
+        console.error('Error during model query:', error);
+        throw error; // Rethrow the error to be caught in the parentPort.on message handler
     }
 }
-
-
-main();
 
 parentPort.on('message', async (message) => {
     console.log('Received data from server:', message);
