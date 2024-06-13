@@ -34,8 +34,8 @@ function sendMessage() {
   const inputs = textArea.value;
 
   const data = {
-      inputs: inputs
-      //parameters: parameters
+      inputs: inputs,
+      parameters: parameters
   };
   // Send the data to the server
   socket.emit('query', data);
