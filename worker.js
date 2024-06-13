@@ -21,7 +21,7 @@ parentPort.on('message', async (message) => {
 async function main() {
     // Create a client to connect to LM Studio, then load a model
     const client = new LMStudioClient({ 
-        baseUrl: "http://192.168.0.178:1234" 
+        baseUrl: "ws://192.168.0.178:1234" 
     });
     const model = await client.llm.load("lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF");
   
