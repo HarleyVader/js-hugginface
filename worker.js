@@ -9,17 +9,14 @@ const client = new LMStudioClient({
 
 // Define the query function
 async function query(message) {
-    // Assuming message contains the input for the model
     const model = await client.llm.load("Sao10K/Fimbulvetr-11B-v2-GGUF/Fimbulvetr-11B-v2.q4_K_S.gguf");
     const prediction = await model.respond([
       { role: "system", content: "You are a helpful AI assistant." },
-      { role: "user", content: message.inputs }, // Use the message as input
+      { role: "user", content: message.inputs },
     ]);
-    let result = "";
-    for await (const part of prediction) {
-      result += part;
-    }
+    // Directly use the prediction object without iterating
     console.log('Result: ', prediction);
+    // Assuming prediction itself is the result you want to return
     return prediction;
 }
 
