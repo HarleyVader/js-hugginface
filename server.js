@@ -43,20 +43,19 @@ io.on('connection', (socket) => {
     });
 
     worker.on('message', (data) => {
-        // Check if result and result.message are defined
-        if (data && data.message) {
-            // If the result is an image, generate a URL for it
-            if (data.message.endsWith('.png')) {
-                const imageName = data.message;
-                data.url = `https://bambisleep.chat/images/${imageName}`;
-            } else {
-                // If the result is text, just send it as is
-                data.text = data.message;
-            }
+        // Assuming 'data' is the prediction result from the worker and it's a string or has a 'text' property
+        let formattedData = {};
+        if (typeof data === 'string') {
+            formattedData.text = data;
+        } else if (data && data.text) {
+            formattedData.text = data.text;
+        } else {
+            // Handle other types of data or errors appropriately
+            formattedData.text = "Error: Invalid data received from worker.";
         }
     
-        // Emit the result to the client
-        socket.emit('data', data);
+        // Emit the formatted result to the client
+        socket.emit('data', formattedData);
     });
 
     socket.on('disconnect', () => {
