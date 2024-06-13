@@ -15,7 +15,7 @@ async function query(message) {
       { role: "user", content: message.inputs },
     ]);
     // Directly use the prediction object without iterating
-    console.log('Result: ',prediction);
+    console.log('Result: ', prediction);
     // Assuming prediction itself is the result you want to return
     return prediction;
 }
