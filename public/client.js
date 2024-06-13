@@ -1,66 +1,66 @@
-// Establishing connection with the server
-const socket = io();
+// client.js
+var socket = io();
 
-// Function to automatically adjust the height of a textarea
 function autoExpand(element) {
   element.style.height = 'inherit';
-  // Calculate the height
   const computed = window.getComputedStyle(element);
   const height = parseInt(computed.getPropertyValue('border-top-width'), 10)
                + parseInt(computed.getPropertyValue('border-bottom-width'), 10)
                + element.scrollHeight;
-  element.style.height = `${height}px`;
+               
+  element.style.height = height + 'px';
 }
 
-// Function to handle form submission and send message to the server
+// Function to send a message to the server
 function sendMessage() {
-  // Extracting values from form fields
-  const top_k = document.getElementById('top_k').value;
-  const top_p = document.getElementById('top_p').value;
-  const temperature = document.getElementById('temperature').value;
-  const max_new_tokens = document.getElementById('max_new_tokens').value;
+  // Get the input element and its value
+  const inputElement = document.getElementById('text');
+  const inputs = inputElement.value;
 
-  // Constructing parameters object
-  const parameters = {
-    top_k: parseInt(top_k, 10),
-    top_p: parseFloat(top_p),
-    temperature: parseFloat(temperature),
-    max_new_tokens: parseInt(max_new_tokens, 10)
-  };
-
-  // Extracting input text
-  const textArea = document.getElementById('text');
-  const inputs = textArea.value;
-
-  // Constructing data object to send
+  // Prepare the data to be sent
   const data = {
     inputs: inputs,
-    parameters: parameters
+    // Add any additional parameters if needed
   };
 
-  // Emitting data to the server
+  // Send the data to the server
   socket.emit('query', data);
 
-  // Updating UI with the user's message
+  // Update the user-message div with the last prompt sent to the server
   const userMessage = document.getElementById('user-send');
   userMessage.textContent = inputs;
 }
 
-// Listening for data event to receive response from the server
+// Listen for AI responses from the server
 socket.on('data', (data) => {
-  // Accessing the container for AI replies
+  // Get the container for the AI replies
   const aiReplyContainer = document.getElementById('ai-reply');
 
-  // Creating a new paragraph element for each reply
-  data.forEach(reply => {
-    const newReply = document.createElement('p');
-    newReply.className = 'result'; // Set the class name here
-    newReply.textContent = reply.content; // Assuming reply has a content property
-    aiReplyContainer.appendChild(newReply);
-  });
+  // Create a new p element
+  const newReply = document.createElement('p');
+
+  // Set the text of the p element to the AI's reply
+  // Assuming the AI response is directly in the data object
+  newReply.textContent = data.text; // Adjusted to use data.text based on the worker's postMessage structure
+
+  // Add the new p element to the container
+  aiReplyContainer.appendChild(newReply);
 });
-// Handling form submission
-document.getElementById('text-generation').addEventListener('submit', function(event) {
-  event.preventDefault(); // Preventing default form submission
-  sendMessage(); // Sending the message
+
+// Get the form element and the send button
+const form = document.getElementById('text-generation'); // Assuming there's an element with this ID for the form
+const sendButton = document.getElementById('submit'); // Assuming the button has the ID 'submit'
+
+// Add event listener for form submit
+form.addEventListener('submit', function(event) {
+  // Prevent the form from submitting normally
+  event.preventDefault();
+
+  // Call the sendMessage function
+  sendMessage();
+});
+
+// Add event listener for the send button click (if not using form submit)
+sendButton.addEventListener('click', function() {
+  sendMessage();
 });
