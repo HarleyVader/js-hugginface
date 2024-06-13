@@ -38,23 +38,10 @@ io.on('connection', (socket) => {
 
     socket.on('query', (data) => {
         console.log(`Received prompt from client with socket ID ${socket.id}: ${data.inputs}`);
-        console.log(`Received parameters from client with socket ID ${socket.id}:`, data.parameters);
         worker.postMessage(data);
     });
 
     worker.on('message', (data) => {
-        // Check if result and result.message are defined
-        if (data && data.message) {
-            // If the result is an image, generate a URL for it
-            if (data.message.endsWith('.png')) {
-                const imageName = data.message;
-                data.url = `https://bambisleep.chat/images/${imageName}`;
-            } else {
-                // If the result is text, just send it as is
-                data.text = data.message;
-            }
-        }
-    
         // Emit the result to the client
         socket.emit('data', data);
     });

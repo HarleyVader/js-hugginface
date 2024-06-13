@@ -13,7 +13,6 @@ function autoExpand(element) {
 
 // Function to send a message to the server
 function sendMessage() {
-
   // Get the textarea element
   const textArea = document.getElementById('text');
 
