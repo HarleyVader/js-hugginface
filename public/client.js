@@ -43,9 +43,9 @@ socket.on('data', (data) => {
 
   // Add the new p element to the container
   aiReplyContainer.appendChild(newReply);
-  
+
   // Update the result element with the AI's reply
-  const resultElement = document.querySelector('.result');
+  const resultElement = document.querySelector('result');
   if (resultElement) {
     resultElement.textContent = data.text;
   }
