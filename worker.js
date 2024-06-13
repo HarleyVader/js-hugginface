@@ -1,6 +1,6 @@
 // worker.js
 require('dotenv').config();
-const fetch = require('node-fetch'); // Ensure this is used if necessary, else remove
+const fetch = require('node-fetch');
 const { parentPort } = require('worker_threads');
 const { LMStudioClient } = require("@lmstudio/sdk");
 
@@ -16,24 +16,38 @@ parentPort.on('message', async (message) => {
 });
 
 async function query(data) {
-    const client = OpenAI(base_url="http://192.168.0.178:1234/v1", api_key="lm-studio")
-    const model = await client.llm.load("Sao10K/Fimbulvetr-11B-v2-GGUF");
+    const response = await fetch("http://localhost:6969/v1/chat/completions", {
+        headers: { 
+            "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({
+            model: "Sao10K/Fimbulvetr-11B-v2-GGUF",
+            messages: [ 
+                { role: "system", content: "Always answer in rhymes." },
+                { role: "user", content: data.content }
+            ], 
+            temperature: 0.7, 
+            max_tokens: -1,
+            stream: true
+        }),
+    });
 
-    // Adjusted to match the structure from the provided index.js
-    const messages = [
-        { role: "system", content: "You are a helpful AI assistant." },
-        { role: "user", content: data.content } // Assuming data.content is the user's query
-    ];
+    // Clone the response for safekeeping in case JSON parsing fails
+    const clonedResponse = response.clone();
 
     try {
-        let resultText = '';
-        for await (const text of model.respond(messages)) {
-            resultText += text;
-        }
-        console.log('Received result from server:', resultText);
-        return { content: resultText };
+        const result = await response.json();
+        console.log('Received result from server:', result);
+        return result;
     } catch (error) {
-        console.error('Error during model prediction:', error);
-        throw error; // Re-throw the error to be caught by the outer try-catch
+        try {
+            // Attempt to read the cloned response as text for debugging
+            const text = await clonedResponse.text();
+            console.error('Failed to parse JSON, raw response:', text);
+        } catch (textError) {
+            console.error('Failed to read response text:', textError);
+        }
+        throw error; // Re-throw the original error after logging
     }
 }
