@@ -1,6 +1,6 @@
 // worker.js
 require('dotenv').config();
-const fetch = require('node-fetch');
+const fetch = require('node-fetch'); // Ensure this is used if necessary, else remove
 const { parentPort } = require('worker_threads');
 const { LMStudioClient } = require("@lmstudio/sdk");
 
@@ -19,9 +19,10 @@ async function query(data) {
     const client = new LMStudioClient();
     const model = await client.llm.load("lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF");
 
+    // Adjusted to match the structure from the provided index.js
     const messages = [
-        { role: "system", content: "Always answer in rhymes." },
-        { role: "user", content: data.content }
+        { role: "system", content: "You are a helpful AI assistant." },
+        { role: "user", content: data.content } // Assuming data.content is the user's query
     ];
 
     try {
