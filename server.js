@@ -43,7 +43,7 @@ io.on('connection', (socket) => {
 
     worker.on('message', (data) => {
         // Emit the result to the client
-        socket.emit('data', data);
+        socket.emit('message', data);
     });
 
     socket.on('disconnect', () => {

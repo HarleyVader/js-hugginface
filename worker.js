@@ -2,7 +2,6 @@
 require('dotenv').config();
 const { parentPort } = require('worker_threads');
 const { LMStudioClient } = require("@lmstudio/sdk");
-const { log } = require('console');
 
 // Initialize LMStudioClient without specifying baseUrl to use the default
 const client = new LMStudioClient({
