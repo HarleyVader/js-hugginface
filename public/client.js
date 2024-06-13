@@ -13,6 +13,20 @@ function autoExpand(element) {
 
 // Function to send a message to the server
 function sendMessage() {
+  // Get the values from the form fields
+  const top_k = document.getElementById('top_k').value;
+  const top_p = document.getElementById('top_p').value;
+  const temperature = document.getElementById('temperature').value;
+  const max_new_tokens = document.getElementById('max_new_tokens').value;
+
+  // Create the parameters object
+  const parameters = {
+      top_k: parseInt(top_k),
+      top_p: parseFloat(top_p),
+      temperature: parseFloat(temperature),
+      max_new_tokens: parseInt(max_new_tokens)
+  };
+
   // Get the textarea element
   const textArea = document.getElementById('text');
 
@@ -21,7 +35,7 @@ function sendMessage() {
 
   const data = {
       inputs: inputs
-
+      //parameters: parameters
   };
   // Send the data to the server
   socket.emit('query', data);
@@ -43,13 +57,10 @@ socket.on('data', (data) => {
 
   // Add the new p element to the container
   aiReplyContainer.appendChild(newReply);
-
-  // Update the result element with the AI's reply
-  const resultElement = document.querySelector('.result');
-  if (resultElement) {
-    resultElement.textContent = data.text;
-  }
 });
+
+// Get the form element
+const form = document.getElementById('text-generation');
 
 // Add event listener for form submit
 form.addEventListener('submit', function(event) {
