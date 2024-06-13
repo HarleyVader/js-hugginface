@@ -27,7 +27,7 @@ function sendMessage() {
 
   // Update the user-message div with the last prompt sent to the server
   const userMessage = document.getElementById('user-send');
-  userMessage.textContent = inputs;
+  userMessage.textContent += inputs;
 }
 
 socket.on('message', (message) => {
