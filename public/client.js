@@ -31,27 +31,24 @@ function sendMessage() {
 }
 
 socket.on('message', (message) => {
-  // Get the container for the AI replies
-  const aiReplyContainer = document.getElementById('ai-reply');
+  // Get the element where you want to display the output
+  const outputElement = document.getElementById("ai-reply");
 
   // Create a new p element
-  const newReply = document.createElement('p');
+  const p = document.createElement("p");
 
-  // Set the text of the p element to the AI's reply
-  newReply.textContent = message.text;
+  // Assuming message.text contains the text you want to append
+  // Set the text of the p element
+  p.textContent = message.text;
 
-  // Add the new p element to the container
-  aiReplyContainer.appendChild(newReply);
+  // Append the p element to the outputElement
+  outputElement.appendChild(p);
 });
-
-// Get the form element
-const form = document.getElementById('text-generation');
 
 // Add event listener for form submit
 form.addEventListener('submit', function(event) {
   // Prevent the form from submitting normally
   event.preventDefault();
-
   // Call the sendMessage function
   sendMessage();
 });
