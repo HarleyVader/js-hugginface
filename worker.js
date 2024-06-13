@@ -13,7 +13,7 @@ async function main() {
       });
   
       // Load a model
-      llama3 = await client.llm.load("fhai50032/RolePlayLake-7B-GGUF/roleplaylake-7b.Q5_K_M.gguf", {
+      llama3 = await client.llm.get("fhai50032/RolePlayLake-7B-GGUF/roleplaylake-7b.Q5_K_M.gguf", {
         config: { gpuOffload: "max" },
         noHup: true,
       });
