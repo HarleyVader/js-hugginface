@@ -7,7 +7,7 @@ async function main() {
     try {
       // Configure LMStudioClient to use the remote server
       const client = new LMStudioClient({
-        baseUrl: 'http://192.168.0.178:1234'
+        baseUrl: 'ws://192.168.0.178:1234'
       });
   
       // Load a model
