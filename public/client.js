@@ -30,7 +30,7 @@ function sendMessage() {
   userMessage.textContent = inputs;
 }
 
-socket.on('data', (message) => {
+socket.on('message', (message) => {
   // Get the container for the AI replies
   const aiReplyContainer = document.getElementById('ai-reply');
 
