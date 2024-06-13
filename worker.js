@@ -7,12 +7,13 @@ async function main() {
     try {
       // Configure LMStudioClient to use the remote server
       const client = new LMStudioClient({
-        serverUrl: 'http://192.168.0.178:1234'
+        baseUrl: 'http://192.168.0.178:1234'
       });
   
       // Load a model
       const llama3 = await client.llm.load("Sao10K/Fimbulvetr-11B-v2-GGUF/Fimbulvetr-11B-v2.q4_K_S.gguf", {
         config: { gpuOffload: "max" },
+        noHup: true,
       });
   
       // Create a text completion prediction
