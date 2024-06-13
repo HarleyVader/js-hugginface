@@ -32,10 +32,22 @@ function sendMessage() {
 }
 
 socket.on('data', (data) => {
-  // Get the paragraph element with class 'result'
-  const resultElement = document.querySelector('.result'); // Fixed: Use '.' to select by class name
+  // Get the container for the AI replies
+  const aiReplyContainer = document.getElementById('ai-reply');
+
+  // Create a new p element
+  const newReply = document.createElement('p');
+
+  // Set the text of the p element to the AI's reply
+  newReply.textContent = data.text;
+
+  // Add the new p element to the container
+  aiReplyContainer.appendChild(newReply);
+
+  // Update the result element with the AI's reply
+  const resultElement = document.querySelector('.result');
   if (resultElement) {
-      resultElement.textContent = data.text;
+    resultElement.textContent = data.text;
   }
 });
 
