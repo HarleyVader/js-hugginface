@@ -1,11 +1,10 @@
 require('dotenv').config();
-const fetch = require('node-fetch');
 const { parentPort } = require('worker_threads');
 const { LMStudioClient } = require("@lmstudio/sdk");
 
 // Initialize LMStudioClient with the new baseUrl
 const client = new LMStudioClient({
-  baseUrl: "ws://192.168.0.178:1234",
+  baseUrl: "ws://192.168.0.178:1234/v1",
 });
 
 parentPort.on('message', async (message) => {
@@ -19,23 +18,21 @@ parentPort.on('message', async (message) => {
     }
 });
 
-async function query(data) {
-    // Load a model with the new model identifier
-    const llama3 = await client.llm.load("Sao10K/Fimbulvetr-11B-v2-GGUF", {
-        config: {
-            gpuOffload: "max",
-        },
+async function main() {
+    // Create a client to connect to LM Studio, then load a model
+    const client = new LMStudioClient({ 
+        baseUrl: "http://192.168.0.178:1234" 
     });
-
-    // Create a text completion prediction
-    const prediction = llama3.complete(data.content);
-
-    // Stream the response and construct the result object
-    let resultText = '';
+    const model = await client.llm.load("lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF");
+  
+    // Predict!
+    const prediction = model.respond([
+      { role: "system", content: "You are a helpful AI assistant." },
+      { role: "user", content: "What is the meaning of life?" },
+    ]);
     for await (const text of prediction) {
-        resultText += text;
+      process.stdout.write(result);
     }
-
-    console.log('Received result from server:', resultText);
-    return { content: resultText };
-}
+  }
+  
+  main();
