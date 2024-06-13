@@ -4,7 +4,7 @@ const { LMStudioClient } = require("@lmstudio/sdk");
 
 // Initialize LMStudioClient with the new baseUrl
 const client = new LMStudioClient({
-  baseUrl: "ws://192.168.0.178:1234/v1",
+  baseUrl: "ws://192.168.0.178:1234/v1/chat/completions",
 });
 
 // Define the query function
