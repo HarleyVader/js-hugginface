@@ -9,9 +9,7 @@ const client = new LMStudioClient({
 
 // Define the query function
 async function query(message) {
-   const model = await client.llm.get("Sao10K/Fimbulvetr-11B-v2-GGUF/Fimbulvetr-11B-v2.q4_K_S.gguf");
-  //const anyModel = await client.llm.get({});
-
+    const model = await client.llm.load("Sao10K/Fimbulvetr-11B-v2-GGUF/Fimbulvetr-11B-v2.q4_K_S.gguf");
     const prediction = await model.respond([
       { role: "system", content: "You are a helpful AI assistant." },
       { role: "user", content: message.inputs },
