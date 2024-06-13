@@ -19,7 +19,7 @@ async function main() {
       });
   
       // Create a text completion prediction
-      const prediction = llama3.complete("The meaning of life is");
+      const prediction = llama3.complete(input);
   
       // Stream the response
       for await (const text of prediction) {
@@ -30,29 +30,6 @@ async function main() {
     }
 }
 
-// Define the query function
-async function query(input) {
-    try {
-        // Ensure the model is loaded
-        if (!llama3) {
-            throw new Error("Model not loaded");
-        }
-
-        // Use the model to generate a response based on the input
-        const prediction = llama3.complete(input);
-        let responseText = '';
-
-        // Stream the response
-        for await (const text of prediction) {
-            responseText += text;
-        }
-
-        return { data: responseText };
-    } catch (error) {
-        console.error('Error during model query:', error);
-        throw error; // Rethrow the error to be caught in the parentPort.on message handler
-    }
-}
 
 main();
 
