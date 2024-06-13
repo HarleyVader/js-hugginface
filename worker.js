@@ -19,6 +19,7 @@ async function query(message) {
     for await (const part of prediction) {
       result += part;
     }
+    console.log('Result: ', result);
     return result;
 }
 
