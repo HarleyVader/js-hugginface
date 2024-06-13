@@ -18,7 +18,6 @@ async function query(data) {
     const response = await fetch("http://localhost:6969/v1/chat/completions", {
         headers: { 
             "Content-Type": "application/json",
-            "api_key": "lm-studio" // Ensure this is the correct way to pass the API key
         },
         method: "POST",
         body: JSON.stringify({
@@ -33,14 +32,21 @@ async function query(data) {
         }),
     });
 
+    // Clone the response for safekeeping in case JSON parsing fails
+    const clonedResponse = response.clone();
+
     try {
         const result = await response.json();
         console.log('Received result from server:', result);
         return result;
     } catch (error) {
-        // Log raw response text for debugging
-        const text = await response.text();
-        console.error('Failed to parse JSON, raw response:', text);
-        throw error; // Re-throw the error after logging
+        try {
+            // Attempt to read the cloned response as text for debugging
+            const text = await clonedResponse.text();
+            console.error('Failed to parse JSON, raw response:', text);
+        } catch (textError) {
+            console.error('Failed to read response text:', textError);
+        }
+        throw error; // Re-throw the original error after logging
     }
 }
