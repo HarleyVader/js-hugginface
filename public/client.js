@@ -27,7 +27,11 @@ function sendMessage() {
 
   // Update the user-message div with the last prompt sent to the server
   const userMessage = document.getElementById('user-send');
-  userMessage.textContent += inputs;
+  // Append new input to userMessage, ensuring it's separated (e.g., with a newline or a divider)
+  userMessage.innerHTML += inputs + "<br>"; // Use "<br>" for line breaks in HTML
+
+  // Clear the textarea after sending the message
+  textArea.value = '';
 }
 
 socket.on('message', (message) => {
