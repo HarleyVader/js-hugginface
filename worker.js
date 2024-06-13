@@ -1,29 +1,33 @@
+//worker.js
 require('dotenv').config();
 const { parentPort } = require('worker_threads');
 const { LMStudioClient } = require("@lmstudio/sdk");
 const { log } = require('console');
 
-// Initialize LMStudioClient with the new baseUrl
+// Initialize LMStudioClient without specifying baseUrl to use the default
 const client = new LMStudioClient({
-  baseUrl: "ws://192.168.0.178:1234",
-});
+    baseUrl: "ws://192.168.0.178:1234",
+  });
 
 // Define the query function
 async function query(message) {
-    const model = await client.llm.load("Sao10K/Fimbulvetr-11B-v2-GGUF/Fimbulvetr-11B-v2.q4_K_S.gguf", {
-        config: { gpuOffload: "max" },
-    });
+    const model = await client.llm.load("Sao10K/Fimbulvetr-11B-v2-GGUF/Fimbulvetr-11B-v2.q4_K_S.gguf");
     
     // Use the model to respond to the user's message
-    const prediction = await model.respond([
-      { role: "system", content: "Ai assistant" },
+    const prediction = model.respond([
+      { role: "system", content: "You are a helpful AI assistant." },
       { role: "user", content: message.inputs },
     ]);
-    // Directly use the prediction object without iterating
-    console.log('Result: ',prediction);
+    
+    // Iterate through the prediction to construct the full response
+    let fullResponse = '';
+    for await (const text of prediction) {
+        fullResponse += text;
+    }
+    console.log('Result: ', fullResponse);
     console.log("message", message.inputs);
-    // Assuming prediction itself is the result you want to return
-    return prediction;
+    // Return the full response
+    return fullResponse;
 }
 
 parentPort.on('message', async (message) => {
