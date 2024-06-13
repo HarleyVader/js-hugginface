@@ -92,7 +92,7 @@
     <div id="chat-container">
         <div id="user-input">      
         <textarea id="text" oninput="autoExpand(this)" placeholder="Tell bambi AI how to behave & what she needs to do!"></textarea>
-        <form id="text-generation">
+       <!--  <form id="text-generation">
            <label for="top_k">Top K:</label>
             <input type="number" id="top_k" name="top_k" min="1" max="10">1
             <br>
@@ -106,10 +106,11 @@
             <input type="number" id="max_new_tokens" name="max_new_tokens" min="1" max="100">100
             <br>
             <p>you dont need to set the weights but can</p>
-            <button id="submit" type="submit">Submit</button>
-            <button type="button" onclick="clearForm()">Clear</button>
-        </form>
-            <br>
+           
+        </form>-->
+        <button id="submit" type="submit">Submit</button>
+        <button type="button" onclick="clearForm()">Clear</button>
+            <!-- <br>
             <div id="user-send"></div>
             <br>
             <p>image generation STOPPED</p>
@@ -117,6 +118,7 @@
             <button id="send">Send</button>
             <br>
             <div id="user-message"></div>
+    -->
         </div>
         <div id="ai-reply"></div> 
         <p class="result"></p>

@@ -34,8 +34,8 @@ function sendMessage() {
   const inputs = textArea.value;
 
   const data = {
-      inputs: inputs,
-      parameters: parameters
+      inputs: inputs
+      //parameters: parameters
   };
   // Send the data to the server
   socket.emit('query', data);
@@ -53,7 +53,7 @@ socket.on('data', (data) => {
   const newReply = document.createElement('p');
 
   // Set the text of the p element to the AI's reply
-  newReply.textContent = data[0].generated_text;
+  newReply.textContent = prediction;
 
   // Add the new p element to the container
   aiReplyContainer.appendChild(newReply);
