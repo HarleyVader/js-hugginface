@@ -1,8 +1,12 @@
-// worker.js
 require('dotenv').config();
 const fetch = require('node-fetch');
 const { parentPort } = require('worker_threads');
 const { LMStudioClient } = require("@lmstudio/sdk");
+
+// Initialize LMStudioClient with the new baseUrl
+const client = new LMStudioClient({
+  baseUrl: "ws://192.168.0.178:1234",
+});
 
 parentPort.on('message', async (message) => {
     console.log('Received data from server:', message);
@@ -16,38 +20,22 @@ parentPort.on('message', async (message) => {
 });
 
 async function query(data) {
-    const response = await fetch("http://localhost:1234/v1/chat/completions", {
-        headers: { 
-            "Content-Type": "application/json",
+    // Load a model with the new model identifier
+    const llama3 = await client.llm.load("Sao10K/Fimbulvetr-11B-v2-GGUF", {
+        config: {
+            gpuOffload: "max",
         },
-        method: "POST",
-        body: JSON.stringify({
-            model: "Sao10K/Fimbulvetr-11B-v2-GGUF",
-            messages: [ 
-                { role: "system", content: "Always answer in rhymes." },
-                { role: "user", content: data.content }
-            ], 
-            temperature: 0.7, 
-            max_tokens: -1,
-            stream: true
-        }),
     });
 
-    // Clone the response for safekeeping in case JSON parsing fails
-    const clonedResponse = response.clone();
+    // Create a text completion prediction
+    const prediction = llama3.complete(data.content);
 
-    try {
-        const result = await response.json();
-        console.log('Received result from server:', result);
-        return result;
-    } catch (error) {
-        try {
-            // Attempt to read the cloned response as text for debugging
-            const text = await clonedResponse.text();
-            console.error('Failed to parse JSON, raw response:', text);
-        } catch (textError) {
-            console.error('Failed to read response text:', textError);
-        }
-        throw error; // Re-throw the original error after logging
+    // Stream the response and construct the result object
+    let resultText = '';
+    for await (const text of prediction) {
+        resultText += text;
     }
+
+    console.log('Received result from server:', resultText);
+    return { content: resultText };
 }
