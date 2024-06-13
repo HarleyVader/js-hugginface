@@ -16,8 +16,8 @@ parentPort.on('message', async (message) => {
 });
 
 async function query(data) {
-    const client = new LMStudioClient();
-    const model = await client.llm.load("lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF");
+    const client = OpenAI(base_url="http://192.168.0.178:1234/v1", api_key="lm-studio")
+    const model = await client.llm.load("Sao10K/Fimbulvetr-11B-v2-GGUF");
 
     // Adjusted to match the structure from the provided index.js
     const messages = [
