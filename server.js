@@ -43,22 +43,6 @@ io.on('connection', (socket) => {
     });
 
     worker.on('message', (data) => {
-        // Assuming 'data' is the prediction result from the worker and it's a string or has a 'text' property
-        let formattedData = {};
-        if (typeof data === 'string') {
-            formattedData.text = data;
-        } else if (data && data.text) {
-            formattedData.text = data.text;
-        } else {
-            // Handle other types of data or errors appropriately
-            formattedData.text = "Error: Invalid data received from worker.";
-        }
-    
-        // Emit the formatted result to the client
-        socket.emit('data', formattedData);
-    });
-/*
-    worker.on('message', (data) => {
         // Check if result and result.message are defined
         if (data && data.message) {
             // If the result is an image, generate a URL for it
@@ -74,7 +58,7 @@ io.on('connection', (socket) => {
         // Emit the result to the client
         socket.emit('data', data);
     });
-*/
+
 
     socket.on('disconnect', () => {
         worker.terminate();
