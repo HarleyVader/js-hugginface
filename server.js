@@ -37,12 +37,13 @@ io.on('connection', (socket) => {
     const worker = new Worker('./worker.js');
 
     socket.on('query', (data) => {
-        console.log(`Received prompt from client with socket ID ${socket.id}: ${data.inputs}`);
+        console.log(`Received prompt from client with socket ID ${socket.id}: ${data.text}`);
         worker.postMessage(data);
     });
 
     worker.on('message', (data) => {
         // Emit the result to the client
+        console.log("message ", data);
         socket.emit('message', data);
     });
 

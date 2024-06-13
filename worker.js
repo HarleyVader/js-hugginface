@@ -26,6 +26,7 @@ async function main() {
     }
 }
 
+main();
 
 // Define the query function
 async function query(input) {
@@ -63,4 +64,3 @@ parentPort.on('message', async (message) => {
     }
 });
 
-main();
