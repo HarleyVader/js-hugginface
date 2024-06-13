@@ -31,18 +31,22 @@ function sendMessage() {
 }
 
 socket.on('message', (message) => {
-  // Get the element where you want to display the output
+  // Get the element where you want to display the LLM output
   const outputElement = document.getElementById("ai-reply");
 
-  // Create a new p element
-  const p = document.createElement("p");
+  // Create a new div element to hold the LLM output
+  const div = document.createElement("div");
 
-  // Assuming message.text contains the text you want to append
-  // Set the text of the p element
-  p.textContent = message.text;
+  // Assuming message.text contains the LLM output you want to append
+  // Set the innerHTML of the div element to include the LLM output
+  // You can format it as needed, here it's wrapped in <p> tags
+  div.innerHTML = `<p>${message.text}</p>`;
 
-  // Append the p element to the outputElement
-  outputElement.appendChild(p);
+  // Append the div element to the outputElement
+  outputElement.appendChild(div);
+
+  // Optionally, scroll to the bottom of the outputElement to ensure the latest output is visible
+  outputElement.scrollTop = outputElement.scrollHeight;
 });
 
 // Add event listener for form submit
