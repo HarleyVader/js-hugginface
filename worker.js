@@ -24,9 +24,9 @@ async function query(input) {
       // Stream the response
       for await (const text of prediction) {
         process.stdout.write(text);
-        responseText += text;
+        message += text;
     }
-        return { data: responseText };
+        return { message:data };
     } catch (error) {
         console.error('Error during model query:', error);
         throw error; // Rethrow the error to be caught in the parentPort.on message handler
