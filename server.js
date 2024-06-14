@@ -3,6 +3,7 @@ const { LMStudioClient } = require('@lmstudio/sdk');
 const express = require('express');
 const WebSocket = require('ws');
 const path = require('path');
+const fs = require('fs').promises;
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
