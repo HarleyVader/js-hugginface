@@ -53,6 +53,8 @@ client.llm.load('Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B-GGUF/MistralRP-No
     },
 }).then(model => {
     roleplay = model;
+}).catch(error => {
+    console.error('Error loading the model:', error);
 });
 
 io.on('connection', (socket) => {
@@ -68,8 +70,14 @@ io.on('connection', (socket) => {
         // Since we can't use for await inside of socket.on, 
         // we'll create a separate async function and call it.
         async function getAndSendResponse() {
-            for await (const text of prediction) {
-                socket.emit('message', text);
+            try {
+                for await (const text of prediction) {
+                    socket.emit('message', text);
+                }
+            } catch (error) {
+                console.error('Error during prediction or sending response:', error);
+                // Optionally, send an error message back to the client
+                socket.emit('error', 'An error occurred while generating the response.');
             }
         }
 
