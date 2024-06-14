@@ -69,7 +69,6 @@ io.on('connection', (socket) => {
         // we'll create a separate async function and call it.
         async function getAndSendResponse() {
             for await (const text of prediction) {
-                console.log('response: ' + text);
                 socket.emit('message', text);
             }
         }
