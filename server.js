@@ -3,6 +3,7 @@ const { LMStudioClient } = require('@lmstudio/sdk');
 const express = require('express');
 const WebSocket = require('ws');
 const path = require('path');
+const { log } = require('console');
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
@@ -68,6 +69,7 @@ io.on('connection', (socket) => {
         // we'll create a separate async function and call it.
         async function getAndSendResponse() {
             for await (const text of prediction) {
+                console.log('response: ' + text);
                 socket.emit('message', text);
             }
         }
