@@ -59,13 +59,9 @@
             color: var(--tertiary-color);
         }
 
-        #send-button {
-            width: 10%;
+        #response {
             padding: 1em;
-            border-left: 1px solid #910054;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            overflow-y: auto;
         }
 
         textarea {
@@ -99,6 +95,9 @@
         a {
             color: var(--tertiary-color);
         }
+        h1 {
+            color: var(--button-color);
+        }
     </style>
 </head>
 
@@ -110,8 +109,8 @@
         <a href="https://www.likera.com/forum/mybb/Thread-bambisleep-chat-Multipurpose-Bambi-Sleep-oriented-AI-GF">Forum</a>
     </nav>
     <div id="chat-container">
-        <h1>BambiSleep AI GF</h1>
         <div id="user-input">
+            <h1>BambiSleep AI GF</h1>
             <textarea id="textarea" oninput="autoExpand(this)"
                 placeholder="Tell bambi AI how to behave with many words!"></textarea>
             <br>
