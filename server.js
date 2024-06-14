@@ -49,7 +49,7 @@ ws.on('close', function close() {
 let roleplay;
 client.llm.load('Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B-GGUF/MistralRP-Noromaid-NSFW-7B-Q4_0.gguf', {
     config: {
-        gpuOffload: 'max'
+        gpuOffload: 0.9,
     },
 }).then(model => {
     roleplay = model;
