@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bambi Sleep Chat AI</title>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="client.js" defer></script>
+    <title>Bambi Sleep AI GF</title>
     <style>
         :root {
             --primary-color: #112727;
@@ -13,24 +12,35 @@
             --tertiary-color: #f2f2f2;
             --button-color: #d4046c;
         }
-        html, body {
+
+        html,
+        body {
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
             background-color: var(--secondary-color);
         }
+
         #chat-container {
             display: flex;
             height: 100vh;
         }
-        #user-input, #ai-reply {
+
+        #user-input,
+        #response {
             width: 35%;
             padding: 1em;
             overflow-y: auto;
             background-color: var(--primary-color);
-            
+
         }
-        #user-send, #user-message{
+
+        #user-input {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #textarea {
             width: 100%;
             border-top: 1px solid var(--button-color);
             border-bottom: 1px solid var(--button-color);
@@ -40,13 +50,15 @@
             padding-top: 1em;
             padding-bottom: 1em;
         }
-        #ai-reply {
+
+        #response,
+        #user-prompt {
             width: 55%;
             border-left: 1px solid #000;
             background-color: var(--primary-color);
             color: var(--tertiary-color);
         }
-        
+
         #send-button {
             width: 10%;
             padding: 1em;
@@ -55,6 +67,7 @@
             align-items: center;
             justify-content: center;
         }
+
         textarea {
             width: 100%;
             height: 50px;
@@ -62,27 +75,33 @@
             box-sizing: border-box;
             resize: none;
         }
+
         button {
             margin-top: 10px;
             border-radius: 3.14rem;
             font-weight: bold;
             background-color: var(--button-color);
         }
+
         button:hover {
             background-color: #ff00ff;
         }
-        form { 
+
+        form {
             color: var(--button-color);
             text-shadow: #ff00ff;
         }
+
         p {
             color: var(--button-color);
         }
+
         a {
             color: var(--tertiary-color);
         }
     </style>
 </head>
+
 <body>
     <nav>
         <a href="/">bambisleep.chat</a>
@@ -91,23 +110,65 @@
     </nav>
     <div id="chat-container">
         <div id="user-input">
-        <h1>Bambi Sleep AI GF</h1>
-        <textarea id="text" oninput="autoExpand(this)" placeholder="Tell bambi AI how to behave & what she needs to do!"></textarea>
-        <form id="text-generation">
+            <textarea id="textarea" oninput="autoExpand(this)"
+                placeholder="Tell bambi AI how to behave & what she needs to do!"></textarea>
+            <br>
+            <div class="send-button" id="user-prompt"></div>
+            <br>
             <button id="submit" type="submit">Submit</button>
-            <button type="button" onclick="clearForm()">Clear</button>
-        </form>
-            <br>
-            <div id="user-send"></div>
-            <br>
-            <h2>Image Generation</h2>
-            <p>image generation STOPPED</p>
-            <textarea id="message" oninput="autoExpand(this)" placeholder="how do you want your bambi to look like?"></textarea>
-            <button id="send">Send</button>
-            <br>
-            <div id="user-message"></div>
         </div>
-        <div id="ai-reply"></div>
+        <div id="response"></div>
     </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const textarea = document.getElementById('textarea');
+        const submit = document.getElementById('submit');
+        const response = document.getElementById('response');
+        const userPrompt = document.getElementById('user-prompt');
+
+        function autoExpand(element) {
+            element.style.height = 'inherit';
+            const computed = window.getComputedStyle(element);
+            const height = parseInt(computed.getPropertyValue('border-top-width'), 10)
+                + parseInt(computed.getPropertyValue('border-bottom-width'), 10)
+                + element.scrollHeight;
+
+            element.style.height = height + 'px';
+        }
+
+        // Initialize a Socket.IO connection
+        const socket = io();
+
+        let currentMessage = '';
+
+        socket.on('message', (message) => {
+            // Add the word to the current message
+            currentMessage += message;
+
+            // If the message is the end of a sentence, create a new p element
+            if (message.endsWith('.') || message.endsWith('?')) {
+                // Create a new p element
+                const messageElement = document.createElement('p');
+                // Set the current message as the content of the p element
+                messageElement.textContent = currentMessage;
+                // Append the p element to the response div
+                response.appendChild(messageElement);
+                // Reset the current message
+                currentMessage = '';
+            }
+        });
+
+
+        // Add an event listener to the submit button
+        submit.addEventListener('click', () => {
+            // Display the textarea content in the user-prompt div
+            userPrompt.textContent = textarea.value;
+            // Send the textarea content to the server
+            socket.emit('message', textarea.value);
+            // Clear the textarea
+            textarea.value = '';
+        });
+    </script>
 </body>
+
 </html>
