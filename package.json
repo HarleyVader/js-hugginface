@@ -1,10 +1,6 @@
 {
   "dependencies": {
     "@lmstudio/sdk": "^0.0.12",
-<<<<<<< HEAD
-    "dotenv": "^16.4.5",
-=======
->>>>>>> dd7f996434939471e02483300623d451987aaad3
     "express": "^4.19.2",
     "socket.io": "^4.7.5"
   }

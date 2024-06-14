@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-
-// server.js
-=======
 // Import the necessary libraries
 const { LMStudioClient } = require('@lmstudio/sdk');
->>>>>>> dd7f996434939471e02483300623d451987aaad3
 const express = require('express');
 const WebSocket = require('ws');
 const path = require('path');
@@ -52,29 +47,6 @@ io.on('connection', (socket) => {
     socket.on('message', (message) => {
         console.log('message: ' + message);
 
-<<<<<<< HEAD
-    socket.on('query', (data) => {
-        console.log(`Received prompt from client with socket ID ${socket.id}: ${data.inputs}`);
-        worker.postMessage(data);
-    });
-
-    worker.on('message', (data) => {
-        // Check if result and result.message are defined
-        if (data && data.message) {
-            // If the result is an image, generate a URL for it
-            if (data.message.endsWith('.png')) {
-                const imageName = data.message;
-                data.url = `https://bambisleep.chat/images/${imageName}`;
-            } else {
-                // If the result is text, just send it as is
-                data.text = data.message;
-            }
-        }
-    
-        // Emit the result to the client
-        socket.emit('data', data);
-    });
-=======
         // Use the loaded model to generate a response
         const prediction = roleplay.complete(message);
 
@@ -85,7 +57,6 @@ io.on('connection', (socket) => {
                 socket.emit('message', text);
             }
         }
->>>>>>> dd7f996434939471e02483300623d451987aaad3
 
         // Call the async function
         getAndSendResponse();
@@ -93,9 +64,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(PORT, () => {
-<<<<<<< HEAD
-    console.log(`Server is listening on port: ${PORT}`);
-=======
     console.log(`listening on *:${PORT}`);
->>>>>>> dd7f996434939471e02483300623d451987aaad3
 });
