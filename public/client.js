@@ -1,51 +1,55 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const socket = io(); // Initialize socket.io client
+// client.js
+var socket = io();
 
-  // Function to automatically expand the textarea to fit its content
-  function autoExpand(element) {
-    element.style.height = 'inherit';
-    const computed = window.getComputedStyle(element);
-    // Calculate the height
-    const height = parseInt(computed.getPropertyValue('border-top-width'), 10) +
-                   parseInt(computed.getPropertyValue('border-bottom-width'), 10) +
-                   element.scrollHeight;
-    element.style.height = height + 'px';
-  }
+function autoExpand(element) {
+  element.style.height = 'inherit';
+  const computed = window.getComputedStyle(element);
+  const height = parseInt(computed.getPropertyValue('border-top-width'), 10)
+               + parseInt(computed.getPropertyValue('border-bottom-width'), 10)
+               + element.scrollHeight;
+               
+  element.style.height = height + 'px';
+}
 
-  // Function to send a message to the server
-  function sendMessage(event) {
-    event.preventDefault(); // Prevent the default form submission behavior
+// Function to send a message to the server
+function sendMessage() {
 
-    const textArea = document.getElementById('text');
-    const data = textArea.value; // Get the value from the textarea
+  // Get the textarea element
+  const textArea = document.getElementById('text');
 
-    // Send the data to the server
-    socket.emit('query', { data });
+  // Get the value of the textarea
+  const inputs = textArea.value;
 
-    // Update the user-message div with the last prompt sent to the server
-    const userSendDiv = document.getElementById('user-send');
-    
-    // Create a new p element
-    const p = document.createElement("p");
-    
-    // Set the text of the p element to the data
-    p.textContent = data; // Corrected from 'inputs' to 'data'
-    
-    // Append the p element to the userSendDiv
-    userSendDiv.appendChild(p);
+  // Send the data to the server
+  socket.emit('query', inputs);
 
-    // Clear the textarea after sending the message
-    textArea.value = '';
-  }
+  // Update the user-message div with the last prompt sent to the server
+  const userMessage = document.getElementById('user-send');
+  userMessage.textContent = inputs;
+}
 
-  // Attach the sendMessage function to the form's submit event
-  document.getElementById('text-generation').addEventListener('submit', sendMessage);
+socket.on('data', (data) => {
+  // Get the container for the AI replies
+  const aiReplyContainer = document.getElementById('ai-reply');
 
-  // Function to handle incoming messages from the server
-  socket.on('message', (message) => {
-    const outputElement = document.getElementById("ai-reply");
-    const p = document.createElement("p");
-    p.textContent = message.text; // Assuming message.text contains the text you want to append
-    outputElement.appendChild(p);
-  });
+  // Create a new p element
+  const newReply = document.createElement('p');
+
+  // Set the text of the p element to the AI's reply
+  newReply.textContent = data;
+
+  // Add the new p element to the container
+  aiReplyContainer.appendChild(newReply);
+});
+
+// Get the form element
+const form = document.getElementById('text-generation');
+
+// Add event listener for form submit
+form.addEventListener('submit', function(event) {
+  // Prevent the form from submitting normally
+  event.preventDefault();
+
+  // Call the sendMessage function
+  sendMessage();
 });
