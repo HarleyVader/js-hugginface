@@ -40,7 +40,8 @@
             flex-direction: column;
         }
 
-        #textarea {
+        #textarea, 
+        #user-prompt {
             width: 100%;
             border-top: 1px solid var(--button-color);
             border-bottom: 1px solid var(--button-color);
@@ -117,12 +118,13 @@
             <h5>Make her read a bambi sleep script from a site. She will remember the last 10 prompts</h5>
             <textarea id="textarea" oninput="autoExpand(this)"
                 placeholder="Tell bambi AI how to behave with many words!"></textarea>
+            <div>
+                <br>
+            <button id="submit" type="submit">Submit</button>
+            <button id="cancel" type="reset">Clear</button>
             <br>
             <div id="user-prompt"></div>
             <br>
-            <div>
-            <button id="submit" type="submit">Submit</button>
-            <button id="cancel" type="reset">Clear</button>
             </div>
         </div>
         <div id="response"></div>
