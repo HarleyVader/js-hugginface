@@ -40,7 +40,7 @@
             flex-direction: column;
         }
 
-        #textarea, 
+        #textarea,
         #user-prompt {
             width: 100%;
             border-top: 1px solid var(--button-color);
@@ -96,9 +96,11 @@
         a {
             color: var(--tertiary-color);
         }
+
         h1 {
             color: var(--button-color);
         }
+
         h5 {
             color: var(--tertiary-color);
         }
@@ -110,7 +112,8 @@
         <a href="/">bambisleep.chat</a>
         <a href="https://bambisleep.chat/images">Images</a>
         <a href="https://www.patreon.com/fabricofsissies/membership">PATREON</a>
-        <a href="https://www.likera.com/forum/mybb/Thread-bambisleep-chat-Multipurpose-Bambi-Sleep-oriented-AI-GF">Forum</a>
+        <a
+            href="https://www.likera.com/forum/mybb/Thread-bambisleep-chat-Multipurpose-Bambi-Sleep-oriented-AI-GF">Forum</a>
     </nav>
     <div id="chat-container">
         <div id="user-input">
@@ -120,11 +123,11 @@
                 placeholder="Tell bambi AI how to behave with many words!"></textarea>
             <div>
                 <br>
-            <button id="submit" type="submit">Submit</button>
-            <button id="cancel" type="reset">Clear</button>
-            <br>
-            <div id="user-prompt"></div>
-            <br>
+                <button id="submit" type="submit">Submit</button>
+                <button id="cancel" type="reset">Clear</button>
+                <br>
+                <div id="user-prompt"></div>
+                <br>
             </div>
         </div>
         <div id="response"></div>
@@ -156,22 +159,21 @@
             currentMessage += message;
 
             // If the message is the end of a sentence, create a new p element
-        if (message.endsWith('.') || message.endsWith('?') || message.endsWith('!')) {
-            // Create a new p element
-            const messageElement = document.createElement('p');
-            // Set the current message as the content of the p element
-            messageElement.textContent = currentMessage;
-            // Insert the p element at the top of the response div
-            if (response.firstChild) {
-                response.insertBefore(messageElement, response.firstChild);
-            } else {
-                response.appendChild(messageElement);
+            if (message.endsWith('.') || message.endsWith('?') || message.endsWith('!')) {
+                // Create a new p element
+                const messageElement = document.createElement('p');
+                // Set the current message as the content of the p element
+                messageElement.textContent = currentMessage;
+                // Insert the p element at the top of the response div
+                if (response.firstChild) {
+                    response.insertBefore(messageElement, response.firstChild);
+                } else {
+                    response.appendChild(messageElement);
+                }
+                // Reset the current message
+                currentMessage = '';
             }
-            // Reset the current message
-            currentMessage = '';
-        }
         });
-
 
         // Add an event listener to the submit button
         submit.addEventListener('click', () => {
@@ -181,6 +183,13 @@
             socket.emit('message', textarea.value);
             // Clear the textarea
             textarea.value = '';
+        });
+
+        textarea.addEventListener('keypress', function (event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault(); // Prevent the default action to stop from adding a new line
+                submit.click(); // Trigger the submit button click
+            }
         });
     </script>
 </body>

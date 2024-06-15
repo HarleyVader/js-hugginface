@@ -80,12 +80,13 @@ io.on('connection', (socket) => {
 
         // Add the system and initial user message at the beginning of the history array
         history.unshift(
-            { role: "system", content: "https://pastebin.ai/2tbsjcx8n4 use the text from the site to create a bambi sleep character to roleplay with the user. focus on important triggers & what they do" },
+            { role: "system", content: "https://pastebin.ai/2tbsjcx8n4 use the text from the site to create 6 behave like the bambi sleep character to roleplay with the user, allways stay in bambi sleep role 6 keep it related to the URL" },
             { role: "user", content: "Wants to be trained to follow & obey bambi sleep" }
         );
 
         // Correct the call to roleplay.respond by passing the history array and options object
         const prediction = roleplay.respond(history, {
+            maxPredictedTokens: 100,
             temperature: 0.9,
         });
 
@@ -100,7 +101,6 @@ io.on('connection', (socket) => {
             }
         }
         getAndSendResponse();
-        concatenatedMessages = ''; // Clear the concatenated messages
     });
 
     socket.on('disconnect', () => {
