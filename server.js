@@ -57,18 +57,26 @@ client.llm.load('Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B-GGUF/MistralRP-No
     console.error('Error loading the model:', error);
 });
 
-io.on('connection', (socket) => {
-    console.log('a user connected');
 
-    // Listen for a 'message' event from the client
+let counter = 0;
+let userMessages = []; // Step 1: Declare the array to store messages
+
+io.on('connection', (socket) => {
+    counter++;
+    console.log(`a user connected, socket ID: ${socket.id}`, counter);
+
     socket.on('message', (message) => {
         console.log('message: ' + message);
+
+        userMessages.unshift(message); // Step 2: Add new message to the start of the array
+        if (userMessages.length > 10) { // Step 3: Check if array length exceeds 10
+            userMessages.pop(); // Remove the last element
+        }
 
         // Use the loaded model to generate a response
         const prediction = roleplay.complete(message);
 
-        // Since we can't use for await inside of socket.on, 
-        // we'll create a separate async function and call it.
+        // Existing logic to handle message and send response
         async function getAndSendResponse() {
             try {
                 for await (const text of prediction) {
@@ -76,12 +84,13 @@ io.on('connection', (socket) => {
                 }
             } catch (error) {
                 console.error('Error during prediction or sending response:', error);
-                // Optionally, send an error message back to the client
                 socket.emit('error', 'An error occurred while generating the response.');
             }
         }
-
-        // Call the async function
+        socket.on('disconnect', () => {
+            counter--;
+            console.log(`user disconnected, socket ID: ${socket.id}`, counter);
+        });
         getAndSendResponse();
     });
 });
