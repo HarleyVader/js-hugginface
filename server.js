@@ -80,7 +80,8 @@ io.on('connection', (socket) => {
         const allMessages = concatenatedMessages.length > 8000 ? concatenatedMessages.substring(0, 8000) : concatenatedMessages;
 
         // Use the concatenated messages to generate a response
-        const prediction = roleplay.complete(allMessages, {  
+        const prediction = roleplay.complete(allMessages, { 
+            contextOverflowPolicy: "stopAtLimit", 
             maxPredictedTokens: 100,
             temperature: 0.8,
         });
