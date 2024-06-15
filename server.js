@@ -63,30 +63,29 @@ client.llm.load('Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B-GGUF/MistralRP-No
 let counter = 0;
 let userMessages = []; // Step 1: Declare the array to store messages
 
+let userSessions = new Set(); // Use a Set to track unique user sessions
+
 io.on('connection', (socket) => {
-    counter++;
-    console.log(`a user connected, socket ID: ${socket.id}`, counter);
+    userSessions.add(socket.id); // Add new session ID
+    console.log(`a user connected, socket ID: ${socket.id}`, userSessions.size);
 
     socket.on('message', (message) => {
         console.log('message: ' + message);
 
-        userMessages.unshift(message); // Step 2: Add new message to the start of the array
-        if (userMessages.length > 10) { // Step 3: Check if array length exceeds 10
-            userMessages.pop(); // Remove the last element
+        userMessages.unshift(message);
+        if (userMessages.length > 10) {
+            userMessages.pop();
         }
 
-        // Concatenate all messages into a single string
         const concatenatedMessages = userMessages.slice().reverse().join(' ');
         const allMessages = concatenatedMessages.length > 8000 ? concatenatedMessages.substring(0, 8000) : concatenatedMessages;
 
-        // Use the concatenated messages to generate a response
         const prediction = roleplay.complete(allMessages, { 
             contextOverflowPolicy: "stopAtLimit", 
             maxPredictedTokens: 100,
             temperature: 0.8,
         });
 
-        // Existing logic to handle message and send response
         async function getAndSendResponse() {
             try {
                 for await (const text of prediction) {
@@ -97,11 +96,12 @@ io.on('connection', (socket) => {
                 socket.emit('error', 'An error occurred while generating the response.');
             }
         }
-        socket.on('disconnect', () => {
-            counter--;
-            console.log(`user disconnected, socket ID: ${socket.id}`, counter);
-        });
         getAndSendResponse();
+    });
+
+    socket.on('disconnect', () => {
+        userSessions.delete(socket.id); // Remove session ID on disconnect
+        console.log(`user disconnected, socket ID: ${socket.id}`, userSessions.size);
     });
 });
 
