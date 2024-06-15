@@ -80,13 +80,12 @@ io.on('connection', (socket) => {
 
         // Add the system and initial user message at the beginning of the history array
         history.unshift(
-            { role: "system", content: "https://pastebin.ai/2tbsjcx8n4 use the text from the site to create 6 behave like the bambi sleep character to roleplay with the user, allways stay in bambi sleep role 6 keep it related to the URL" },
-            { role: "user", content: "Wants to be trained to follow & obey bambi sleep" }
+            { role: "system", content: " Your name is bambi sleep & you must roleplay with the user based on this site https://pastebin.ai/2tbsjcx8n4 use it to instruct the user what to do next" },
+            { role: "user", content: "will follow all your instructions" }
         );
 
         // Correct the call to roleplay.respond by passing the history array and options object
         const prediction = roleplay.respond(history, {
-            maxPredictedTokens: 100,
             temperature: 0.9,
         });
 
