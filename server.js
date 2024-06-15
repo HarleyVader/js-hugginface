@@ -50,6 +50,8 @@ let roleplay;
 client.llm.load('Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B-GGUF/MistralRP-Noromaid-NSFW-7B-Q4_0.gguf', {
     config: {
         gpuOffload: 0.9,
+        context_length: 32768,
+        embedding_length: 8176,
     },
 }).then(model => {
     roleplay = model;
@@ -73,8 +75,12 @@ io.on('connection', (socket) => {
             userMessages.pop(); // Remove the last element
         }
 
-        // Use the loaded model to generate a response
-        const prediction = roleplay.complete(message);
+        // Concatenate all messages into a single string
+        const concatenatedMessages = userMessages.slice().reverse().join(' ');
+        const allMessages = concatenatedMessages.length > 8000 ? concatenatedMessages.substring(0, 8000) : concatenatedMessages;
+
+        // Use the concatenated messages to generate a response
+        const prediction = roleplay.complete(allMessages);
 
         // Existing logic to handle message and send response
         async function getAndSendResponse() {
