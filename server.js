@@ -74,14 +74,14 @@ io.on('connection', (socket) => {
         if (userMessages.length > 10) {
             userMessages.pop();
         }
-
+/*
         let concatenatedMessages = userMessages.slice().reverse().join(' ');
         let allMessages = concatenatedMessages.length > 8000 ? concatenatedMessages.substring(0, 8000) : concatenatedMessages;
 
         /*let prediction = roleplay.complete( { 
             
         });*/
-        const prediction = roleplay.respond(allMessages, [
+        const prediction = roleplay.respond(userMessages, [
             { role: "system", content: "https://pastebin.ai/2tbsjcx8n4 use the text from the site to create a bambi sleep character to roleplay with the user. focus in important triggers & what they do" },
             { role: "user", content: "Wants to be trained to follow & obey bambi sleep" },
           ],
