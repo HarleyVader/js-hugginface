@@ -52,7 +52,6 @@ client.llm.load('Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B-GGUF/MistralRP-No
         gpuOffload: 0.9,
         context_length: 32768,
         embedding_length: 8176,
-        token
     },
 }).then(model => {
     roleplay = model;
