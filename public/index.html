@@ -162,7 +162,7 @@
                 // Set the current message as the content of the p element
                 messageElement.textContent = currentMessage;
                 // Append the p element to the response div
-                response.appendChild(messageElement);
+                response.insertBefore(messageElement, response.firstChild);
                 // Reset the current message
                 currentMessage = '';
             }
