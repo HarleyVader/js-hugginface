@@ -74,21 +74,20 @@ io.on('connection', (socket) => {
         if (userMessages.length > 10) {
             userMessages.pop();
         }
-/*
-        let concatenatedMessages = userMessages.slice().reverse().join(' ');
-        let allMessages = concatenatedMessages.length > 8000 ? concatenatedMessages.substring(0, 8000) : concatenatedMessages;
+        
+        // Assuming userMessages contains strings of user messages, we need to convert them into the expected format
+        let history = userMessages.map(message => ({ role: "user", content: message }));
 
-        /*let prediction = roleplay.complete( { 
-            
-        });*/
-        const prediction = roleplay.respond(userMessages, [
-            { role: "system", content: "https://pastebin.ai/2tbsjcx8n4 use the text from the site to create a bambi sleep character to roleplay with the user. focus in important triggers & what they do" },
-            { role: "user", content: "Wants to be trained to follow & obey bambi sleep" },
-          ],
-          {
-            temperature: 0.9,
-          }
+        // Add the system and initial user message at the beginning of the history array
+        history.unshift(
+            { role: "system", content: "https://pastebin.ai/2tbsjcx8n4 use the text from the site to create a bambi sleep character to roleplay with the user. focus on important triggers & what they do" },
+            { role: "user", content: "Wants to be trained to follow & obey bambi sleep" }
         );
+
+        // Correct the call to roleplay.respond by passing the history array and options object
+        const prediction = roleplay.respond(history, {
+            temperature: 0.9,
+        });
 
         async function getAndSendResponse() {
             try {
@@ -108,7 +107,7 @@ io.on('connection', (socket) => {
         userMessages = []; // Clear the messages on disconnect
         userSessions.delete(socket.id); // Remove session ID on disconnect
         console.log(`user disconnected, socket ID: ${socket.id}`, userSessions.size);
-        
+
     });
 });
 
