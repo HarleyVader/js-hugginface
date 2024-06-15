@@ -97,8 +97,10 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
+        userMessages = []; // Clear the messages on disconnect
         userSessions.delete(socket.id); // Remove session ID on disconnect
         console.log(`user disconnected, socket ID: ${socket.id}`, userSessions.size);
+        
     });
 });
 
