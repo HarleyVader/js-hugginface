@@ -59,8 +59,6 @@ client.llm.load('Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B-GGUF/MistralRP-No
     console.error('Error loading the model:', error);
 });
 
-
-let counter = 0;
 let userMessages = []; // Step 1: Declare the array to store messages
 
 let userSessions = new Set(); // Use a Set to track unique user sessions
@@ -77,16 +75,16 @@ io.on('connection', (socket) => {
             userMessages.pop();
         }
 
-        const concatenatedMessages = userMessages.slice().reverse().join(' ');
-        const allMessages = concatenatedMessages.length > 8000 ? concatenatedMessages.substring(0, 8000) : concatenatedMessages;
+        let concatenatedMessages = userMessages.slice().reverse().join(' ');
+        let allMessages = concatenatedMessages.length > 8000 ? concatenatedMessages.substring(0, 8000) : concatenatedMessages;
 
-        const prediction = roleplay.complete(allMessages, { 
+        let prediction = roleplay.complete(allMessages, { 
             temperature: 0.1,
         });
 
         async function getAndSendResponse() {
             try {
-                for await (const text of prediction) {
+                for await (let text of prediction) {
                     socket.emit('message', text);
                 }
             } catch (error) {
@@ -95,6 +93,7 @@ io.on('connection', (socket) => {
             }
         }
         getAndSendResponse();
+        concatenatedMessages = ''; // Clear the concatenated messages
     });
 
     socket.on('disconnect', () => {
