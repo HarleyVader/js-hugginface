@@ -91,7 +91,7 @@ io.on('connection', (socket) => {
         );
 
         // Correct the call to roleplay.respond by passing the history array and options object
-        const prediction = roleplay.complete(history, {
+        const prediction = roleplay.respond(history, {
             temperature: 0.9,
         });
 
