@@ -69,7 +69,7 @@ io.on('connection', (socket) => {
         socket.emit('error', 'Server is not ready yet.');
         return; // Exit if model is not loaded
     }
-    
+
     userSessions.add(socket.id); // Add new session ID
     console.log(`a user connected, socket ID: ${socket.id}`, userSessions.size);
 
@@ -91,7 +91,7 @@ io.on('connection', (socket) => {
         );
 
         // Correct the call to roleplay.respond by passing the history array and options object
-        const prediction = roleplay.respond(history, {
+        const prediction = roleplay.complete(history, {
             temperature: 0.9,
         });
 
