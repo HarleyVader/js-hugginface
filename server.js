@@ -64,6 +64,12 @@ let userMessages = []; // Step 1: Declare the array to store messages
 let userSessions = new Set(); // Use a Set to track unique user sessions
 
 io.on('connection', (socket) => {
+    if (!roleplay) {
+        console.error('Model not loaded yet.');
+        socket.emit('error', 'Server is not ready yet.');
+        return; // Exit if model is not loaded
+    }
+    
     userSessions.add(socket.id); // Add new session ID
     console.log(`a user connected, socket ID: ${socket.id}`, userSessions.size);
 
