@@ -46,7 +46,7 @@ ws.on('close', function close() {
 });
 
 // Assuming the WebSocket connection to Discord (theoretical, as Discord webhooks do not support WebSocket connections directly)
-const discordWebhookURL = 'wss://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6';
+const discordWebhookURL = 'https://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6';
 const discordWs = new WebSocket(discordWebhookURL);
 
 discordWs.on('open', function open() {
