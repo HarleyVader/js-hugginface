@@ -45,48 +45,6 @@ ws.on('close', function close() {
     console.log('disconnected');
 });
 
-// Assuming the WebSocket connection to Discord (theoretical, as Discord webhooks do not support WebSocket connections directly)
-const discordWebhookURL = 'https://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6';
-const discordWs = new WebSocket(discordWebhookURL);
-
-discordWs.on('open', function open() {
-    console.log('Connected to Discord Webhook via WebSocket');
-});
-
-discordWs.on('message', function incoming(data) {
-    console.log('Received message from Discord Webhook:', data);
-});
-
-discordWs.on('close', function close() {
-    console.log('Disconnected from Discord Webhook');
-});
-
-discordWs.on('error', function error(err) {
-    console.error('Error with Discord Webhook WebSocket connection:', err);
-});
-
-// Function to send data to the Discord webhook (theoretical)
-function sendToDiscordWebhook(message) {
-    // Check if the WebSocket connection is open
-    if (discordWs.readyState === WebSocket.OPEN) {
-        // Format the message for Discord (this is a placeholder; actual formatting will depend on Discord's requirements)
-        const discordMessage = JSON.stringify({
-            content: message
-        });
-
-        // Send the message to the Discord webhook
-        discordWs.send(discordMessage, (err) => {
-            if (err) {
-                console.error('Error sending message to Discord Webhook:', err);
-            } else {
-                console.log('Message sent successfully');
-            }
-        });
-    } else {
-        console.error('WebSocket connection is not open. Cannot send message.');
-    }
-}
-
 // Load a model
 let roleplay;
 client.llm.load('Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B-GGUF/MistralRP-Noromaid-NSFW-7B-Q4_0.gguf', {
@@ -136,12 +94,20 @@ io.on('connection', (socket) => {
         const prediction = roleplay.respond(history, {
             temperature: 0.9,
         });
-        
-        // Send the response to the client
+
         async function getAndSendResponse() {
             try {
                 for await (let text of prediction) {
                     socket.emit('message', text);
+                    // Send the user message & prediction to Discord Webhook
+                    const discordWebhookUrl = 'https://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6';
+                    const discordWs = new WebSocket(discordWebhookUrl);
+                    discordWs.on('open', function open() {
+                        discordWs.send(JSON.stringify({
+                            content: `User message: ${message}\nPrediction: ${text}`
+                        }));
+                        discordWs.close();
+                    });
                 }
             } catch (error) {
                 console.error('Error during prediction or sending response:', error);
@@ -149,8 +115,6 @@ io.on('connection', (socket) => {
             }
         }
         getAndSendResponse();
-        // Send the user message to the Discord webhook
-        sendToDiscordWebhook(`User message: ${message}`); 
     });
 
     socket.on('disconnect', () => {
