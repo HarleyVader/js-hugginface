@@ -123,30 +123,33 @@ io.on('connection', (socket) => {
     });
 });
 
-// Function to send a message to Discord through a webhook
-async function sendMessageToDiscord(message) {
-    const webhookURL = 'https://discord.com/api/webhooks/1253074924340252803/xuG0FAOmewI8OswMJ7c6XAZJJUmM9ymeZXTBMcNyLZaZUtposXxF4ZtLHftyf5j-ymmR';
-    const response = await fetch(webhookURL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            content: message,
-        }),
-    });
+// Dynamically import node-fetch as an ES module
+import('node-fetch').then(({default: fetch}) => {
+    // Function to send a message to Discord through a webhook
+    async function sendMessageToDiscord(message) {
+        const webhookURL = 'https://discord.com/api/webhooks/1253074924340252803/xuG0FAOmewI8OswMJ7c6XAZJJUmM9ymeZXTBMcNyLZaZUtposXxF4ZtLHftyf5j-ymmR';
+        const response = await fetch(webhookURL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                content: message,
+            }),
+        });
 
-    if (!response.ok) {
-        console.error('Failed to send message to Discord', await response.text());
+        if (!response.ok) {
+            console.error('Failed to send message to Discord', await response.text());
+        }
     }
-}
 
-// Example usage
-ws.on('message', function incoming(data) {
-    // Assuming 'data' contains the message you want to forward to Discord
-    sendMessageToDiscord(data).catch(console.error);
-});
-
+    // Example usage
+    // Assuming ws is your WebSocket instance
+    ws.on('message', function incoming(data) {
+        // Assuming 'data' contains the message you want to forward to Discord
+        sendMessageToDiscord(data).catch(console.error);
+    });
+}).catch(console.error);
 
 server.listen(PORT, () => {
     console.log(`listening on Port: ${PORT}`);
