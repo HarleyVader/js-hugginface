@@ -113,6 +113,10 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
+        console.log(`user disconnected, socket ID: ${socket.id}`);
+        userSessions.delete(socket.id); // Remove session ID
+        
+        console.log(userSessions.size);
         // Optionally, clean up the session history if it's no longer needed
         delete sessionHistories[socket.id];
     });
