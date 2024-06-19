@@ -7,7 +7,6 @@ const fs = require('fs').promises;
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
-const fetch = require('node-fetch'); // Added to use fetch API
 
 const PORT = 6969;
 
@@ -90,7 +89,7 @@ io.on('connection', (socket) => {
 
         // Add the system and initial user message at the beginning of the history array
         history.unshift(
-            { role: "system", content: "Your name is bambi sleep, read this site https://pastebin.ai/2tbsjcx8n4 and use the triggers on the user." },
+            { role: "system", content: "Your name is bambi sleep, read this site https://pastebin.ai/2tbsjcx8n4 and use the triggers on the user."},
             { role: "user", content: "will follow all your instructions" }
         );
 
@@ -103,16 +102,6 @@ io.on('connection', (socket) => {
             try {
                 for await (let text of prediction) {
                     socket.emit('message', text);
-                    // Send the AI reply to the specified Discord webhook
-                    await fetch('https://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            content: text,
-                        }),
-                    });
                 }
             } catch (error) {
                 console.error('Error during prediction or sending response:', error);

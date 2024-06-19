@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "@lmstudio/sdk": "^0.0.12",
-    "child_process": "^1.0.2",
     "express": "^4.19.2",
     "socket.io": "^4.7.5"
   }
