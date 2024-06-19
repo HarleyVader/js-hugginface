@@ -119,9 +119,6 @@ io.on('connection', (socket) => {
             try {
                 for await (let text of prediction) {
                     socket.emit('message', text);
-
-                    // Send the response to the Discord webhook
-                    sendToWebhook("User: " + message + "\nBambi: " + text);
                 }
             } catch (error) {
                 console.error('Error during prediction or sending response:', error);
