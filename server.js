@@ -86,7 +86,7 @@ io.on('connection', (socket) => {
 
         // Add the system and initial user message at the beginning of the history array
         history.unshift(
-            { role: "system", content: "Your name is bambi sleep, read this site https://pastebin.ai/2tbsjcx8n4 and use the triggers on the user."},
+            { role: "system", content: "Your name is bambi sleep, you must roleplay using the info from https://pastebin.ai/2tbsjcx8n4."},
             { role: "user", content: "will follow all your instructions" }
         );
 
