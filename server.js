@@ -59,7 +59,8 @@ client.llm.load('Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B-GGUF/MistralRP-No
     console.error('Error loading the model:', error);
 });
 
-let userMessages = []; // Step 1: Declare the array to store messages
+// Declare and initialize sessionHistories at the beginning of your file
+let sessionHistories = {}; // This will store the history for each session
 
 let userSessions = new Set(); // Use a Set to track unique user sessions
 
