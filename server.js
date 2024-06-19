@@ -3,7 +3,6 @@ const { LMStudioClient } = require('@lmstudio/sdk');
 const express = require('express');
 const WebSocket = require('ws');
 const path = require('path');
-const fetch = require('node-fetch');
 const fs = require('fs').promises;
 const app = express();
 const server = require('http').createServer(app);
@@ -45,25 +44,6 @@ ws.on('open', function open() {
 ws.on('close', function close() {
     console.log('disconnected');
 });
-
-async function sendToWebhook(message) {
-    const webhookUrl = 'https://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6';
-    const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            content: message,
-        }),
-    });
-
-    if (response.ok) {
-        console.log('Message sent successfully');
-    } else {
-        console.error('Failed to send message');
-    }
-}
 
 // Load a model
 let roleplay;
@@ -115,20 +95,16 @@ io.on('connection', (socket) => {
             temperature: 0.9,
         });
 
-        let predictionText = '';
         async function getAndSendResponse() {
             try {
                 for await (let text of prediction) {
-                    predictionText += text;
                     socket.emit('message', text);
                 }
-               
             } catch (error) {
                 console.error('Error during prediction or sending response:', error);
                 socket.emit('error', 'An error occurred while generating the response.');
             }
         }
-        sendToWebhook("User: " + message + "\n" + "Bot: " + predictionText  + "\n");
         getAndSendResponse();
     });
 

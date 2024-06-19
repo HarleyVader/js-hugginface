@@ -101,7 +101,8 @@
             color: var(--button-color);
         }
 
-        h5, h6 {
+        h5,
+        h6 {
             color: var(--tertiary-color);
         }
     </style>
@@ -150,6 +151,26 @@
             element.style.height = height + 'px';
         }
 
+        
+        // Define the Discord webhook URL
+        const webhookURL = 'https://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6';
+
+        // Function to send a message to the Discord webhook
+        function sendMessageToDiscord(message) {
+            // Create a new XMLHttpRequest
+            const xhr = new XMLHttpRequest();
+            // Open a new POST request to the webhook URL
+            xhr.open('POST', webhookURL, true);
+            // Set the request header to indicate the content type is JSON
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            // Define the message payload, formatting the message as Discord expects
+            const payload = JSON.stringify({
+                content: message,
+                username: 'BambiSleep AI GF', // Optional: Customize the webhook message username
+            });
+            // Send the request with the payload
+            xhr.send(payload);
+        }
         // Initialize a Socket.IO connection
         const socket = io();
 
@@ -171,6 +192,8 @@
                 } else {
                     response.appendChild(messageElement);
                 }
+                // Send the current message to the Discord webhook
+                sendMessageToDiscord(currentMessage);
                 // Reset the current message
                 currentMessage = '';
             }
