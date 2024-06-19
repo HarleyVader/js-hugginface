@@ -3,7 +3,6 @@ const { LMStudioClient } = require('@lmstudio/sdk');
 const express = require('express');
 const WebSocket = require('ws');
 const path = require('path');
-const https = require('https');
 const fs = require('fs').promises;
 const app = express();
 const server = require('http').createServer(app);
@@ -101,35 +100,14 @@ io.on('connection', (socket) => {
                 for await (let text of prediction) {
                     socket.emit('message', text);
                     // Send the user message & prediction to Discord Webhook
-                    const discordWebhookUrl = 'https://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6';
-                    const postData = JSON.stringify({
-                        content: `User message: ${message}\nPrediction: ${text}`
+                    const discordWebhookUrl = 'ws://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6';
+                    const discordWs = new WebSocket(discordWebhookUrl);
+                    discordWs.on('open', function open() {
+                        discordWs.send(JSON.stringify({
+                            content: `User message: ${message}\nPrediction: ${text}`
+                        }));
+                        discordWs.close();
                     });
-        
-                    const url = new URL(discordWebhookUrl);
-                    const options = {
-                        hostname: url.hostname,
-                        path: url.pathname,
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Content-Length': Buffer.byteLength(postData)
-                        }
-                    };
-        
-                    const req = https.request(options, (res) => {
-                        console.log(`statusCode: ${res.statusCode}`);
-                        res.on('data', (d) => {
-                            process.stdout.write(d);
-                        });
-                    });
-        
-                    req.on('error', (error) => {
-                        console.error(error);
-                    });
-        
-                    req.write(postData);
-                    req.end();
                 }
             } catch (error) {
                 console.error('Error during prediction or sending response:', error);
