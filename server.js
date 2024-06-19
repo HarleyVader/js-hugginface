@@ -9,9 +9,9 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
 // Additional import for fetch to use in sending messages to Discord
-import('node-fetch').then(({default: fetch}) => {
-    global.fetch = fetch; // Make fetch globally available for sendMessageToDiscord function
-}).catch(console.error);
+// Instead of using import('node-fetch').then(...), use require to import node-fetch
+const fetch = require('node-fetch');
+global.fetch = fetch; // Make fetch globally available for sendMessageToDiscord function
 
 const PORT = 6969;
 
@@ -81,45 +81,41 @@ io.on('connection', (socket) => {
     userSessions.add(socket.id); // Add new session ID
     console.log(`a user connected, socket ID: ${socket.id}`, userSessions.size);
 
-    socket.on('message', (message) => {
+    socket.on('message', async (message) => { // Mark this callback as async to use await inside
         console.log('message: ' + message);
-
+    
         userMessages.unshift(message);
         if (userMessages.length > 10) {
             userMessages.pop();
         }
         
-        // Assuming userMessages contains strings of user messages, we need to convert them into the expected format
         let history = userMessages.map(message => ({ role: "user", content: message }));
-
-        // Add the system and initial user message at the beginning of the history array
+    
         history.unshift(
-            { role: "system", content: " Your name is bambi sleep & you must roleplay with the user based on this site https://pastebin.ai/2tbsjcx8n4 use the sites triggers on the user" },
+            { role: "system", content: "Your name is bambi sleep, read this site https://pastebin.ai/2tbsjcx8n4 and use the triggers on the user." },
             { role: "user", content: "will follow all your instructions" }
         );
-
-        // Correct the call to roleplay.respond by passing the history array and options object
-        const prediction = roleplay.respond(history, {
-            temperature: 0.9,
-        });
-
-        async function getAndSendResponse() {
-            try {
-                let fullMessage = ''; // Initialize an empty string to accumulate messages
-                for await (let text of prediction) {
-                    socket.emit('message', text); // Still send each message to the socket
-                    fullMessage += text + '\n'; // Append each text to fullMessage with a newline
-                }
-                if (fullMessage) { // Check if fullMessage is not empty
-                    sendMessageToDiscord(fullMessage.trim()).catch(console.error); // Send accumulated messages to Discord
-                    fullMessage = ''; // Clear the fullMessage string after sending
-                }
-            } catch (error) {
-                console.error('Error during prediction or sending response:', error);
-                socket.emit('error', 'An error occurred while generating the response.');
+    
+        // Ensure roleplay.respond is awaited correctly to get the prediction result
+        try {
+            const prediction = await roleplay.respond(history, {
+                temperature: 0.9,
+            });
+    
+            let fullMessage = '';
+            // Assuming prediction is an array or iterable of messages
+            for (let text of prediction) {
+                socket.emit('message', text);
+                fullMessage += text + '\n';
             }
+            if (fullMessage) {
+                await sendMessageToDiscord(fullMessage.trim()); // Ensure this is awaited or handled properly
+                fullMessage = ''; // Clear the fullMessage string after sending
+            }
+        } catch (error) {
+            console.error('Error during prediction or sending response:', error);
+            socket.emit('error', 'An error occurred while generating the response.');
         }
-        getAndSendResponse();
     });
 
     socket.on('disconnect', () => {
@@ -132,7 +128,7 @@ io.on('connection', (socket) => {
 
 // Function to send a message to Discord through a webhook
 async function sendMessageToDiscord(message) {
-    const webhookURL = 'https://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6';
+    const webhookURL = 'https://discord.com/api/webhooks/1253074924340252803/xuG0FAOmewI8OswMJ7c6XAZJJUmM9ymeZXTBMcNyLZaZUtposXxF4ZtLHftyf5j-ymmR';
     const response = await fetch(webhookURL, {
         method: 'POST',
         headers: {
@@ -150,4 +146,4 @@ async function sendMessageToDiscord(message) {
 
 server.listen(PORT, () => {
     console.log(`listening on Port: ${PORT}`);
-});
+});	
