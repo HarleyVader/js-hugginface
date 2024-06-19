@@ -7,6 +7,7 @@ const fs = require('fs').promises;
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
+const fetch = require('node-fetch'); // Import node-fetch at the top of your file
 
 const PORT = 6969;
 
@@ -45,8 +46,36 @@ ws.on('close', function close() {
     console.log('disconnected');
 });
 
+
+
+// Function to send a message to Discord through a webhook
+async function sendMessageToDiscord(message) {
+    const webhookURL = 'https://discord.com/api/webhooks/1253074924340252803/xuG0FAOmewI8OswMJ7c6XAZJJUmM9ymeZXTBMcNyLZaZUtposXxF4ZtLHftyf5j-ymmR';
+    const response = await fetch(webhookURL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            content: message,
+        }),
+    });
+
+    if (!response.ok) {
+        console.error('Failed to send message to Discord', await response.text());
+    }
+}
+
+// Example usage
+ws.on('message', function incoming(data) {
+    // Assuming 'data' contains the message you want to forward to Discord
+    sendMessageToDiscord(data).catch(console.error);
+});
+
 // Load a model
 let roleplay;
+console.log('Starting model loading at', new Date().toISOString());
+
 client.llm.load('Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B-GGUF/MistralRP-Noromaid-NSFW-7B-Q4_0.gguf', {
     config: {
         gpuOffload: 0.9,
@@ -55,8 +84,9 @@ client.llm.load('Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B-GGUF/MistralRP-No
     },
 }).then(model => {
     roleplay = model;
+    console.log('Model loaded successfully at', new Date().toISOString());
 }).catch(error => {
-    console.error('Error loading the model:', error);
+    console.error('Error loading the model at', new Date().toISOString(), error);
 });
 
 let userMessages = []; // Step 1: Declare the array to store messages
@@ -117,5 +147,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`listening on *:${PORT}`);
+    console.log(`listening on Port: ${PORT}`);
 });
