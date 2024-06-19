@@ -47,8 +47,6 @@ ws.on('close', function close() {
 
 // Load a model
 let roleplay;
-console.log('Starting model loading at', new Date().toISOString());
-
 client.llm.load('Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B-GGUF/MistralRP-Noromaid-NSFW-7B-Q4_0.gguf', {
     config: {
         gpuOffload: 0.9,
@@ -57,9 +55,8 @@ client.llm.load('Ttimofeyka/MistralRP-Noromaid-NSFW-Mistral-7B-GGUF/MistralRP-No
     },
 }).then(model => {
     roleplay = model;
-    console.log('Model loaded successfully at', new Date().toISOString());
 }).catch(error => {
-    console.error('Error loading the model at', new Date().toISOString(), error);
+    console.error('Error loading the model:', error);
 });
 
 let userMessages = []; // Step 1: Declare the array to store messages
@@ -90,7 +87,7 @@ io.on('connection', (socket) => {
         // Add the system and initial user message at the beginning of the history array
         history.unshift(
             { role: "system", content: "Your name is bambi sleep, read this site https://pastebin.ai/2tbsjcx8n4 and use the triggers on the user."},
-            { role: "user", content: "will follow all your instructions" }
+            { role: "user", content: "will follow system instructions" }
         );
 
         // Correct the call to roleplay.respond by passing the history array and options object
