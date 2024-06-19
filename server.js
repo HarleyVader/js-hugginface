@@ -129,7 +129,7 @@ io.on('connection', (socket) => {
 
 // Function to send a message to Discord through a webhook
 async function sendMessageToDiscord(message) {
-    const webhookURL = 'https://discord.com/api/webhooks/1253074924340252803/xuG0FAOmewI8OswMJ7c6XAZJJUmM9ymeZXTBMcNyLZaZUtposXxF4ZtLHftyf5j-ymmR';
+    const webhookURL = 'https://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6';
     const response = await fetch(webhookURL, {
         method: 'POST',
         headers: {
