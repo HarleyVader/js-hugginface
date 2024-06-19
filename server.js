@@ -101,10 +101,11 @@ io.on('connection', (socket) => {
             const prediction = await roleplay.respond(history, {
                 temperature: 0.9,
             });
-    
+        
             let fullMessage = '';
-            // Assuming prediction is an array or iterable of messages
-            for (let text of prediction) {
+            // Check if prediction is an array, if not, make it an array
+            const messages = Array.isArray(prediction) ? prediction : [prediction];
+            for (let text of messages) {
                 socket.emit('message', text);
                 fullMessage += text + '\n';
             }
