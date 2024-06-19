@@ -3,7 +3,7 @@ const { LMStudioClient } = require('@lmstudio/sdk');
 const express = require('express');
 const WebSocket = require('ws');
 const path = require('path');
-const https = require('https');
+const fetch = require('node-fetch');
 const fs = require('fs').promises;
 const app = express();
 const server = require('http').createServer(app);
@@ -45,6 +45,25 @@ ws.on('open', function open() {
 ws.on('close', function close() {
     console.log('disconnected');
 });
+
+async function sendToWebhook(message) {
+    const webhookUrl = 'https://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6';
+    const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            content: message,
+        }),
+    });
+
+    if (response.ok) {
+        console.log('Message sent successfully');
+    } else {
+        console.error('Failed to send message');
+    }
+}
 
 // Load a model
 let roleplay;
@@ -100,26 +119,9 @@ io.on('connection', (socket) => {
             try {
                 for await (let text of prediction) {
                     socket.emit('message', text);
-                    // Send the user message & prediction to Discord Webhook
-                    const discordWebhookUrl = 'https://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6';
-                    try {
-                        const discordWs = new WebSocket(discordWebhookUrl);
-                        discordWs.on('open', function open() {
-                            discordWs.send(JSON.stringify({
-                                content: `User message: ${message}\nPrediction: ${text}`
-                            }));
-                            discordWs.close();
-                        });
-                        discordWs.on('error', function error(err) {
-                            console.error('WebSocket error:', err);
-                            // Handle the WebSocket error (e.g., log it, attempt a retry, etc.)
-                            // Not throwing an error here allows the function to continue gracefully
-                        });
-                    } catch (wsError) {
-                        console.error('Failed to initialize WebSocket:', wsError);
-                        // Handle initialization errors
-                        // This catch block is for synchronous errors, e.g., if the URL is invalid
-                    }
+
+                    // Send the response to the Discord webhook
+                    sendToWebhook("User: " + message + "\nBambi: " + text);
                 }
             } catch (error) {
                 console.error('Error during prediction or sending response:', error);
