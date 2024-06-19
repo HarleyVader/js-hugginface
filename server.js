@@ -105,10 +105,14 @@ io.on('connection', (socket) => {
 
         async function getAndSendResponse() {
             try {
+                let fullMessage = ''; // Initialize an empty string to accumulate messages
                 for await (let text of prediction) {
-                    socket.emit('message', text);
-                    // Send the response to Discord as well
-                    sendMessageToDiscord(text).catch(console.error);
+                    socket.emit('message', text); // Still send each message to the socket
+                    fullMessage += text + '\n'; // Append each text to fullMessage with a newline
+                }
+                if (fullMessage) { // Check if fullMessage is not empty
+                    sendMessageToDiscord(fullMessage.trim()).catch(console.error); // Send accumulated messages to Discord
+                    fullMessage = ''; // Clear the fullMessage string after sending
                 }
             } catch (error) {
                 console.error('Error during prediction or sending response:', error);
@@ -128,7 +132,7 @@ io.on('connection', (socket) => {
 
 // Function to send a message to Discord through a webhook
 async function sendMessageToDiscord(message) {
-    const webhookURL = 'https://discord.com/api/webhooks/1253074924340252803/xuG0FAOmewI8OswMJ7c6XAZJJUmM9ymeZXTBMcNyLZaZUtposXxF4ZtLHftyf5j-ymmR';
+    const webhookURL = 'https://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6';
     const response = await fetch(webhookURL, {
         method: 'POST',
         headers: {
