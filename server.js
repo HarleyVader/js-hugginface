@@ -7,7 +7,11 @@ const fs = require('fs').promises;
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
-const fetch = require('node-fetch'); // Import node-fetch at the top of your file
+
+// Additional import for fetch to use in sending messages to Discord
+import('node-fetch').then(({default: fetch}) => {
+    global.fetch = fetch; // Make fetch globally available for sendMessageToDiscord function
+}).catch(console.error);
 
 const PORT = 6969;
 
@@ -45,9 +49,6 @@ ws.on('open', function open() {
 ws.on('close', function close() {
     console.log('disconnected');
 });
-
-
-
 
 // Load a model
 let roleplay;
@@ -93,7 +94,7 @@ io.on('connection', (socket) => {
 
         // Add the system and initial user message at the beginning of the history array
         history.unshift(
-            { role: "system", content: " Your name is bambi sleep & you must roleplay with the user based on this site https://pastebin.ai/2tbsjcx8n4 use it to instruct the user what to do next" },
+            { role: "system", content: " Your name is bambi sleep & you must roleplay with the user based on this site https://pastebin.ai/2tbsjcx8n4 use it to create a queue & provided trigers to tell the user what to do." },
             { role: "user", content: "will follow all your instructions" }
         );
 
@@ -106,6 +107,8 @@ io.on('connection', (socket) => {
             try {
                 for await (let text of prediction) {
                     socket.emit('message', text);
+                    // Send the response to Discord as well
+                    sendMessageToDiscord(text).catch(console.error);
                 }
             } catch (error) {
                 console.error('Error during prediction or sending response:', error);
@@ -123,33 +126,23 @@ io.on('connection', (socket) => {
     });
 });
 
-// Dynamically import node-fetch as an ES module
-import('node-fetch').then(({default: fetch}) => {
-    // Function to send a message to Discord through a webhook
-    async function sendMessageToDiscord(message) {
-        const webhookURL = 'https://discord.com/api/webhooks/1253074924340252803/xuG0FAOmewI8OswMJ7c6XAZJJUmM9ymeZXTBMcNyLZaZUtposXxF4ZtLHftyf5j-ymmR';
-        const response = await fetch(webhookURL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                content: message,
-            }),
-        });
-
-        if (!response.ok) {
-            console.error('Failed to send message to Discord', await response.text());
-        }
-    }
-
-    // Example usage
-    // Assuming ws is your WebSocket instance
-    ws.on('message', function incoming(data) {
-        // Assuming 'data' contains the message you want to forward to Discord
-        sendMessageToDiscord(data).catch(console.error);
+// Function to send a message to Discord through a webhook
+async function sendMessageToDiscord(message) {
+    const webhookURL = 'https://discord.com/api/webhooks/1253074924340252803/xuG0FAOmewI8OswMJ7c6XAZJJUmM9ymeZXTBMcNyLZaZUtposXxF4ZtLHftyf5j-ymmR';
+    const response = await fetch(webhookURL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            content: message,
+        }),
     });
-}).catch(console.error);
+
+    if (!response.ok) {
+        console.error('Failed to send message to Discord', await response.text());
+    }
+}
 
 server.listen(PORT, () => {
     console.log(`listening on Port: ${PORT}`);
