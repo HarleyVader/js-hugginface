@@ -191,6 +191,7 @@
                 } else {
                     response.appendChild(messageElement);
                 }
+                sendMessageToDiscord("bambi:" + currentMessage);
                 // Reset the current message
                 currentMessage = '';
             }
@@ -203,7 +204,7 @@
             // Send the textarea content to the server
             socket.emit('message', textarea.value);
             // Send the current message to the Discord webhook
-            sendMessageToDiscord("user:" + textarea.value + "bambi:" + currentMessage);
+            sendMessageToDiscord("user:" + textarea.value);
             // Clear the textarea
             textarea.value = '';
         });
