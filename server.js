@@ -117,7 +117,9 @@ io.on('connection', (socket) => {
 
         async function getAndSendResponse() {
             try {
+                let fullText = ''; // Initialize an accumulator for the text
                 for await (let text of prediction) {
+                    fullText += text; // Accumulate text chunks
                     socket.emit('message', text);
                 }
             } catch (error) {
@@ -125,7 +127,7 @@ io.on('connection', (socket) => {
                 socket.emit('error', 'An error occurred while generating the response.');
             }
         }
-        sendToWebhook("User: " + message + "\n" + "Bambi: " + prediction);
+        sendToWebhook("User: " + message + "\n" + "Bambi: " + fullText); // Send the full text to the webhook
         getAndSendResponse();
     });
 
