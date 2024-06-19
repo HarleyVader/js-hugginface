@@ -115,19 +115,20 @@ io.on('connection', (socket) => {
             temperature: 0.9,
         });
 
+        let predictionText = '';
         async function getAndSendResponse() {
             try {
-                let fullText = ''; // Initialize an accumulator for the text
                 for await (let text of prediction) {
-                    fullText += text; // Accumulate text chunks
+                    predictionText += text;
                     socket.emit('message', text);
                 }
+               
             } catch (error) {
                 console.error('Error during prediction or sending response:', error);
                 socket.emit('error', 'An error occurred while generating the response.');
             }
         }
-        sendToWebhook("User: " + message + "\n" + "Bambi: " + fullText); // Send the full text to the webhook
+        sendToWebhook("User: " + message + "\n" + "Bot: " + predictionText  + "\n");
         getAndSendResponse();
     });
 
