@@ -3,6 +3,7 @@ const { LMStudioClient } = require('@lmstudio/sdk');
 const express = require('express');
 const WebSocket = require('ws');
 const path = require('path');
+const https = require('https');
 const fs = require('fs').promises;
 const app = express();
 const server = require('http').createServer(app);
@@ -100,14 +101,25 @@ io.on('connection', (socket) => {
                 for await (let text of prediction) {
                     socket.emit('message', text);
                     // Send the user message & prediction to Discord Webhook
-                    const discordWebhookUrl = 'ws://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6';
-                    const discordWs = new WebSocket(discordWebhookUrl);
-                    discordWs.on('open', function open() {
-                        discordWs.send(JSON.stringify({
-                            content: `User message: ${message}\nPrediction: ${text}`
-                        }));
-                        discordWs.close();
-                    });
+                    const discordWebhookUrl = 'https://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6';
+                    try {
+                        const discordWs = new WebSocket(discordWebhookUrl);
+                        discordWs.on('open', function open() {
+                            discordWs.send(JSON.stringify({
+                                content: `User message: ${message}\nPrediction: ${text}`
+                            }));
+                            discordWs.close();
+                        });
+                        discordWs.on('error', function error(err) {
+                            console.error('WebSocket error:', err);
+                            // Handle the WebSocket error (e.g., log it, attempt a retry, etc.)
+                            // Not throwing an error here allows the function to continue gracefully
+                        });
+                    } catch (wsError) {
+                        console.error('Failed to initialize WebSocket:', wsError);
+                        // Handle initialization errors
+                        // This catch block is for synchronous errors, e.g., if the URL is invalid
+                    }
                 }
             } catch (error) {
                 console.error('Error during prediction or sending response:', error);
