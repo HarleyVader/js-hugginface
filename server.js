@@ -73,6 +73,34 @@ io.on('connection', (socket) => {
     userSessions.add(socket.id); // Add new session ID
     console.log(`a user connected, socket ID: ${socket.id}`, userSessions.size);
 
+    const DiscordWebhookURL = 'https://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6';
+
+    // Function to send data to Discord via webhook
+    async function sendToDiscord(message) {
+        const discordData = JSON.stringify({
+            content: message,
+            username: 'bambisleep.chat AI GF',
+        });
+
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: discordData,
+        };
+
+        try {
+            const response = await fetch(DiscordWebhookURL, requestOptions);
+            if (!response.ok) {
+                throw new Error(`Error in sending message to Discord: ${response.statusText}`);
+            }
+            console.log('Message sent to Discord successfully');
+        } catch (error) {
+            console.error('Failed to send message to Discord:', error);
+        }
+    }
+
     socket.on('message', (message) => {
         console.log('message: ' + message);
 
@@ -99,6 +127,8 @@ io.on('connection', (socket) => {
             try {
                 for await (let text of prediction) {
                     socket.emit('message', text);
+                    // Send both the user prompt and the prediction to Discord
+                await sendToDiscord(`User: ${message}\nBot: ${text}`);
                 }
             } catch (error) {
                 console.error('Error during prediction or sending response:', error);
