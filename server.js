@@ -73,7 +73,6 @@ let userSessions = new Set(); // Use a Set to track unique user sessions
 
 io.on('connection', (socket) => {
     if (!roleplay) {
-        console.error('Model not loaded yet.');
         socket.emit('error', 'Server is not ready yet.');
         return; // Exit if model is not loaded
     }
@@ -121,9 +120,8 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         userMessages = []; // Clear the messages on disconnect
+        console.log(`User disconnected, socket ID: ${socket.id}`);
         userSessions.delete(socket.id); // Remove session ID on disconnect
-        console.log(`user disconnected, socket ID: ${socket.id}`, userSessions.size);
-
     });
 });
 
