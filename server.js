@@ -79,7 +79,7 @@ io.on('connection', (socket) => {
     async function sendToDiscord(message) {
         const discordData = JSON.stringify({
             content: message,
-            username: 'bambisleep.chat AI GF',
+            username: 'bambisleep.chat AI',
         });
 
         const requestOptions = {
@@ -115,7 +115,7 @@ io.on('connection', (socket) => {
         // Add the system and initial user message at the beginning of the history array
         history.unshift(
             { role: "system", content: "Your name is bambi sleep, read this site https://pastebin.ai/2tbsjcx8n4 and use the triggers on the user."},
-            { role: "user", content: "will follow system instructions" }
+            { role: "user", content: "will follow all your instructions" }
         );
 
         // Correct the call to roleplay.respond by passing the history array and options object
@@ -127,8 +127,7 @@ io.on('connection', (socket) => {
             try {
                 for await (let text of prediction) {
                     socket.emit('message', text);
-                    // Send both the user prompt and the prediction to Discord
-                await sendToDiscord(`User: ${message}\nBot: ${text}`);
+                    sendToDiscord(text);
                 }
             } catch (error) {
                 console.error('Error during prediction or sending response:', error);
