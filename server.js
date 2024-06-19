@@ -73,22 +73,22 @@ io.on('connection', (socket) => {
     userSessions.add(socket.id); // Add new session ID
     console.log(`a user connected, socket ID: ${socket.id}`, userSessions.size);
 
+    // Initialize or retrieve the history for the current session
+    if (!sessionHistories[socket.id]) {
+        sessionHistories[socket.id] = [
+            { role: "system", content: "Your name is bambi sleep, you must roleplay using the info from https://pastebin.ai/2tbsjcx8n4."},
+            { role: "user", content: "will follow all your instructions" }
+        ];
+    }
+
     socket.on('message', (message) => {
         console.log('message: ' + message);
 
-        userMessages.unshift(message);
-        if (userMessages.length > 10) {
-            userMessages.pop();
-        }
-        
-        // Assuming userMessages contains strings of user messages, we need to convert them into the expected format
-        let history = userMessages.map(message => ({ role: "user", content: message }));
+        // Add user message to the session history
+        sessionHistories[socket.id].push({ role: "user", content: message });
 
-        // Add the system and initial user message at the beginning of the history array
-        history.unshift(
-            { role: "system", content: "Your name is bambi sleep, you must roleplay using the info from https://pastebin.ai/2tbsjcx8n4."},
-            { role: "user", content: "will follow all your instructions" }
-        );
+        // Prepare the history for the LLM, including previous responses
+        let history = sessionHistories[socket.id];
 
         // Correct the call to roleplay.respond by passing the history array and options object
         const prediction = roleplay.respond(history, {
@@ -98,7 +98,10 @@ io.on('connection', (socket) => {
         async function getAndSendResponse() {
             try {
                 for await (let text of prediction) {
+                    // Emit the response to the user
                     socket.emit('message', text);
+                    // Add LLM response to the session history
+                    sessionHistories[socket.id].push({ role: "system", content: text });
                 }
             } catch (error) {
                 console.error('Error during prediction or sending response:', error);
@@ -109,10 +112,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
-        userMessages = []; // Clear the messages on disconnect
-        userSessions.delete(socket.id); // Remove session ID on disconnect
-        console.log(`user disconnected, socket ID: ${socket.id}`, userSessions.size);
-
+        // Optionally, clean up the session history if it's no longer needed
+        delete sessionHistories[socket.id];
     });
 });
 
