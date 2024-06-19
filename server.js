@@ -125,6 +125,7 @@ io.on('connection', (socket) => {
                 socket.emit('error', 'An error occurred while generating the response.');
             }
         }
+        sendToWebhook("User: " + message + "\n" + "Bambi: " + prediction);
         getAndSendResponse();
     });
 
