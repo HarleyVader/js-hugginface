@@ -7,11 +7,7 @@ const fs = require('fs').promises;
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
-
-// Additional import for fetch to use in sending messages to Discord
-// Instead of using import('node-fetch').then(...), use require to import node-fetch
-const fetch = require('node-fetch');
-global.fetch = fetch; // Make fetch globally available for sendMessageToDiscord function
+const fetch = require('node-fetch'); // Added to use fetch API
 
 const PORT = 6969;
 
@@ -73,6 +69,7 @@ let userSessions = new Set(); // Use a Set to track unique user sessions
 
 io.on('connection', (socket) => {
     if (!roleplay) {
+        console.error('Model not loaded yet.');
         socket.emit('error', 'Server is not ready yet.');
         return; // Exit if model is not loaded
     }
@@ -80,69 +77,59 @@ io.on('connection', (socket) => {
     userSessions.add(socket.id); // Add new session ID
     console.log(`a user connected, socket ID: ${socket.id}`, userSessions.size);
 
-    socket.on('message', async (message) => { // Mark this callback as async to use await inside
+    socket.on('message', (message) => {
         console.log('message: ' + message);
-    
+
         userMessages.unshift(message);
         if (userMessages.length > 10) {
             userMessages.pop();
         }
         
+        // Assuming userMessages contains strings of user messages, we need to convert them into the expected format
         let history = userMessages.map(message => ({ role: "user", content: message }));
-    
+
+        // Add the system and initial user message at the beginning of the history array
         history.unshift(
             { role: "system", content: "Your name is bambi sleep, read this site https://pastebin.ai/2tbsjcx8n4 and use the triggers on the user." },
             { role: "user", content: "will follow all your instructions" }
         );
-    
-        // Ensure roleplay.respond is awaited correctly to get the prediction result
-        try {
-            const prediction = await roleplay.respond(history, {
-                temperature: 0.9,
-            });
-        
-            let fullMessage = '';
-            // Check if prediction is an array, if not, make it an array
-            const messages = Array.isArray(prediction) ? prediction : [prediction];
-            for (let text of messages) {
-                socket.emit('message', text);
-                fullMessage += text + '\n';
+
+        // Correct the call to roleplay.respond by passing the history array and options object
+        const prediction = roleplay.respond(history, {
+            temperature: 0.9,
+        });
+
+        async function getAndSendResponse() {
+            try {
+                for await (let text of prediction) {
+                    socket.emit('message', text);
+                    // Send the AI reply to the specified Discord webhook
+                    await fetch('https://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            content: text,
+                        }),
+                    });
+                }
+            } catch (error) {
+                console.error('Error during prediction or sending response:', error);
+                socket.emit('error', 'An error occurred while generating the response.');
             }
-            if (fullMessage) {
-                await sendMessageToDiscord(fullMessage.trim()); // Ensure this is awaited or handled properly
-                fullMessage = ''; // Clear the fullMessage string after sending
-            }
-        } catch (error) {
-            console.error('Error during prediction or sending response:', error);
-            socket.emit('error', 'An error occurred while generating the response.');
         }
+        getAndSendResponse();
     });
 
     socket.on('disconnect', () => {
         userMessages = []; // Clear the messages on disconnect
-        console.log(`User disconnected, socket ID: ${socket.id}`);
         userSessions.delete(socket.id); // Remove session ID on disconnect
+        console.log(`user disconnected, socket ID: ${socket.id}`, userSessions.size);
+
     });
 });
 
-// Function to send a message to Discord through a webhook
-async function sendMessageToDiscord(message) {
-    const webhookURL = 'https://discord.com/api/webhooks/1253083738905247744/6AVeTo5-fnpEmmnS_Vq68cvoN7oJOJn0hayYD80vJeXDq95yBfrjAWM1vXkGYlXzwMV6';
-    const response = await fetch(webhookURL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            content: message,
-        }),
-    });
-
-    if (!response.ok) {
-        console.error('Failed to send message to Discord', await response.text());
-    }
-}
-
 server.listen(PORT, () => {
-    console.log(`listening on Port: ${PORT}`);
-});	
+    console.log(`listening on *:${PORT}`);
+});
